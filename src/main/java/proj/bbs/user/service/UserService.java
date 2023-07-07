@@ -36,7 +36,6 @@ public class UserService {
         if (user.isEmpty()) {
             throw new NotFoundException("요청한 회원을 찾을 수 없습니다");
         }
-
         return userMapper.userToUserInfoDto(user.get(0));
     }
 }
