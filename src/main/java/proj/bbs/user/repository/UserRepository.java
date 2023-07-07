@@ -23,4 +23,8 @@ public class UserRepository {
             .getSingleResult();
     }
 
+    public void deleteUser(User user) {
+        em.remove(user);
+    }
+
 }

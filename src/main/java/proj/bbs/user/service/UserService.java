@@ -56,4 +56,10 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
     }
 
+    @Transactional
+    public void deleteUser(String email) {
+        User user = userRepository.findByEmail(email);
+        userRepository.deleteUser(user);
+    }
+
 }

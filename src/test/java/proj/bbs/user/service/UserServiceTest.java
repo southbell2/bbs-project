@@ -163,8 +163,24 @@ class UserServiceTest {
         //when && then
         assertThatThrownBy(() -> userService.updatePassword(email, passwordDTO))
             .isInstanceOf(BadCredentialsException.class);
-
-
     }
 
+    @Test
+    public void 회원_탈퇴() {
+        //given
+        SignUpUserDTO signUpUserDTO = new SignUpUserDTO();
+        String email = "test@test.com";
+        String nickname = "Terry";
+        signUpUserDTO.setEmail(email);
+        signUpUserDTO.setNickname(nickname);
+        signUpUserDTO.setPassword("12345");
+        userService.signUp(signUpUserDTO);
+
+        //when
+        userService.deleteUser(email);
+
+        //then
+        assertThatThrownBy(() -> userService.getUserInfo(email))
+            .isInstanceOf(EmptyResultDataAccessException.class);
+    }
 }

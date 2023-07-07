@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -49,6 +50,13 @@ public class UserController {
         UpdatePasswordDTO updatePasswordDTO) {
         String email = authentication.getName();
         userService.updatePassword(email, updatePasswordDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete-user")
+    public ResponseEntity<?> deleteUser(Authentication authentication) {
+        String email = authentication.getName();
+        userService.deleteUser(email);
         return ResponseEntity.ok().build();
     }
 
