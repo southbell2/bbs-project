@@ -3,7 +3,6 @@ package proj.bbs;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import proj.bbs.user.service.dto.SignUpUserDTO;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class SecurityTest {
 
     @Autowired
@@ -27,20 +27,26 @@ public class SecurityTest {
 
     @Test
     public void 인증되지않은_사용자() throws Exception {
-        mvc.perform(get("/security_test"))
+        mvc.perform(get("/userinfo"))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser
+    @WithMockUser(username = "test@test.com")
     public void 인증된_사용자() throws Exception {
-        mvc.perform(get("/security_test"))
-            .andExpect(status().isOk())
-            .andExpect(content().string("security test"));
+        //Given
+        SignUpUserDTO user = new SignUpUserDTO();
+        user.setEmail("test@test.com");
+        user.setNickname("Terry");
+        user.setPassword("12345");
+        userService.signUp(user);
+
+        //When && Then
+        mvc.perform(get("/userinfo"))
+            .andExpect(status().isOk());
     }
 
     @Test
-    @Transactional
     public void HttpBasic_인증() throws Exception {
         //Given
         SignUpUserDTO user = new SignUpUserDTO();

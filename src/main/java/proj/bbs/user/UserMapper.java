@@ -1,6 +1,7 @@
 package proj.bbs.user;
 
 import org.mapstruct.Mapper;
+import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 
@@ -8,4 +9,6 @@ import proj.bbs.user.service.dto.SignUpUserDTO;
 public interface UserMapper {
 
     User signUpDtoToUser(SignUpUserDTO signUpUserDTO);
+
+    UserInfoDTO userToUserInfoDto(User user);
 }

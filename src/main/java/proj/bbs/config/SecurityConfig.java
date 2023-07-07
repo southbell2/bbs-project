@@ -20,7 +20,7 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/login", "/security_test").authenticated()
+                .requestMatchers("/login", "/userinfo").authenticated()
                 .requestMatchers("/signup").permitAll())
             .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
             .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
