@@ -11,6 +11,7 @@ import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
 import proj.bbs.user.service.dto.SignUpUserDTO;
+import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -38,4 +39,14 @@ public class UserService {
         }
         return userMapper.userToUserInfoDto(user.get(0));
     }
+
+    @Transactional
+    public void updateUserInfo(UpdateUserInfoDTO userDTO) {
+        List<User> user = userRepository.findByEmail(userDTO.getEmail());
+        if (user.isEmpty()) {
+            throw new NotFoundException("요청한 회원을 찾을 수 없습니다");
+        }
+        user.get(0).updateUserInfo(userDTO);
+    }
+
 }

@@ -7,12 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @Entity
 @Table(name = "users")
@@ -40,5 +42,17 @@ public class User {
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT NOW()")
     private LocalDateTime createdAt;
+
+    public void updateUserInfo(UpdateUserInfoDTO userInfoDTO) {
+        setNickname(userInfoDTO.getNickname());
+    }
+
+    private void setNickname(String nickname) {
+        Objects.requireNonNull(nickname, "닉네임을 입력하세요");
+        if (nickname.length() < 3 || 10 < nickname.length()) {
+            throw new IllegalArgumentException("닉네임의 크기가 적절하지 않습니다");
+        }
+        this.nickname = nickname;
+    }
 
 }

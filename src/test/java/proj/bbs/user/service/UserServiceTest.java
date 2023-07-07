@@ -14,6 +14,7 @@ import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
 import proj.bbs.user.service.dto.SignUpUserDTO;
+import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @SpringBootTest
 @Transactional
@@ -85,7 +86,34 @@ class UserServiceTest {
 
         //when && then
         assertThatThrownBy(() -> userService.getUserInfo(email))
-            .isInstanceOf(NotFoundException.class);
+            .isInstanceOf(NotFoundException.class)
+            .hasMessageContaining("요청한 회원을 찾을 수 없습니다");
 
     }
+
+    @Test
+    public void 회원_정보_수정() {
+        //given
+        SignUpUserDTO signUpUserDTO = new SignUpUserDTO();
+        String email = "test@test.com";
+        String nickname = "Terry";
+        signUpUserDTO.setEmail(email);
+        signUpUserDTO.setNickname(nickname);
+        signUpUserDTO.setPassword("12345");
+        userService.signUp(signUpUserDTO);
+
+        nickname = "Spring";
+        UpdateUserInfoDTO userInfoDTO = new UpdateUserInfoDTO();
+        userInfoDTO.setEmail(email);
+        userInfoDTO.setNickname(nickname);
+
+        //when
+        userService.updateUserInfo(userInfoDTO);
+
+        //then
+        List<User> user = userRepository.findByEmail(email);
+        assertThat(user.get(0).getNickname()).isEqualTo(nickname);
+
+    }
+
 }

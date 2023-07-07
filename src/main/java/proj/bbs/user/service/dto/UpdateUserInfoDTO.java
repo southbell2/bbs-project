@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SignUpUserDTO {
+public class UpdateUserInfoDTO {
 
     @Email
     @NotBlank
@@ -18,8 +18,5 @@ public class SignUpUserDTO {
     @Size(min = 3, max = 10, message = "닉네임의 크기는 3~10 사이여야 합니다")
     private String nickname;
 
-    @NotBlank
-    @Size(min = 4, max = 15, message = "비밀번호의 크기는 4~15 사이여야 합니다")
-    private String password;
 
 }
