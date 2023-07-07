@@ -47,12 +47,29 @@ public class User {
         setNickname(userInfoDTO.getNickname());
     }
 
+    /**
+     * 해싱된 비밀번호를 넘겨야만 한다.
+     */
+    public void updatePassword(String newHashPassword) {
+        setPassword(newHashPassword);
+    }
+
     private void setNickname(String nickname) {
         Objects.requireNonNull(nickname, "닉네임을 입력하세요");
         if (nickname.length() < 3 || 10 < nickname.length()) {
             throw new IllegalArgumentException("닉네임의 크기가 적절하지 않습니다");
         }
         this.nickname = nickname;
+    }
+
+    private void setPassword(String password) {
+        Objects.requireNonNull(password, "비밀번호를 입력하세요");
+
+        //bcrypt로 해시하면 길이가 60이 나온다
+       if (password.length() != 60) {
+            throw new IllegalArgumentException("적절하지 않은 비밀번호");
+        }
+        this.password = password;
     }
 
 }

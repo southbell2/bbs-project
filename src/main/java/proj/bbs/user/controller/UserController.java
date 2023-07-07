@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.service.UserService;
 import proj.bbs.user.service.dto.SignUpUserDTO;
+import proj.bbs.user.service.dto.UpdatePasswordDTO;
 import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @Controller
@@ -40,6 +41,14 @@ public class UserController {
     @PutMapping("/update-userinfo")
     public ResponseEntity<?> updateUserInfo(@RequestBody @Valid UpdateUserInfoDTO userInfoDTO) {
         userService.updateUserInfo(userInfoDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<?> updatePassword(Authentication authentication, @RequestBody @Valid
+        UpdatePasswordDTO updatePasswordDTO) {
+        String email = authentication.getName();
+        userService.updatePassword(email, updatePasswordDTO);
         return ResponseEntity.ok().build();
     }
 

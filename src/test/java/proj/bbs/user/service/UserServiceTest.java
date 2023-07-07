@@ -3,17 +3,19 @@ package proj.bbs.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import proj.bbs.exception.NotFoundException;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
 import proj.bbs.user.service.dto.SignUpUserDTO;
+import proj.bbs.user.service.dto.UpdatePasswordDTO;
 import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @SpringBootTest
@@ -24,24 +26,26 @@ class UserServiceTest {
     UserService userService;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Test
     public void 회원_가입_성공() {
         //Given
-        SignUpUserDTO user = new SignUpUserDTO();
+        SignUpUserDTO userDTO = new SignUpUserDTO();
         String email = "test@test.com";
         String nickname = "Terry";
-        user.setEmail(email);
-        user.setNickname(nickname);
-        user.setPassword("12345");
+        userDTO.setEmail(email);
+        userDTO.setNickname(nickname);
+        userDTO.setPassword("12345");
 
         //When
-        userService.signUp(user);
-        List<User> userList = userRepository.findByEmail(email);
+        userService.signUp(userDTO);
+        User user = userRepository.findByEmail(email);
 
         //Then
-        assertThat(userList.get(0).getEmail()).isEqualTo(email);
-        assertThat(userList.get(0).getNickname()).isEqualTo(nickname);
+        assertThat(user.getEmail()).isEqualTo(email);
+        assertThat(user.getNickname()).isEqualTo(nickname);
     }
 
     @Test
@@ -86,8 +90,7 @@ class UserServiceTest {
 
         //when && then
         assertThatThrownBy(() -> userService.getUserInfo(email))
-            .isInstanceOf(NotFoundException.class)
-            .hasMessageContaining("요청한 회원을 찾을 수 없습니다");
+            .isInstanceOf(EmptyResultDataAccessException.class);
 
     }
 
@@ -111,8 +114,56 @@ class UserServiceTest {
         userService.updateUserInfo(userInfoDTO);
 
         //then
-        List<User> user = userRepository.findByEmail(email);
-        assertThat(user.get(0).getNickname()).isEqualTo(nickname);
+        User user = userRepository.findByEmail(email);
+        assertThat(user.getNickname()).isEqualTo(nickname);
+
+    }
+
+    @Test
+    public void 비밀번호_수정() {
+        //given
+        SignUpUserDTO signUpUserDTO = new SignUpUserDTO();
+        String email = "test@test.com";
+        String nowPassword = "12345";
+        signUpUserDTO.setEmail(email);
+        signUpUserDTO.setNickname("Terry");
+        signUpUserDTO.setPassword(nowPassword);
+        userService.signUp(signUpUserDTO);
+
+        String newPassword = "qwerasdf";
+        UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
+        passwordDTO.setNowPassword(nowPassword);
+        passwordDTO.setNewPassword(newPassword);
+
+        //when
+        userService.updatePassword(email, passwordDTO);
+
+        //then
+        User user = userRepository.findByEmail(email);
+        assertThat(passwordEncoder.matches(newPassword, user.getPassword())).isTrue();
+    }
+
+    @Test
+    public void 비밀번호_수정_실패() {
+        //given
+        SignUpUserDTO signUpUserDTO = new SignUpUserDTO();
+        String email = "test@test.com";
+        String nowPassword = "12345";
+        signUpUserDTO.setEmail(email);
+        signUpUserDTO.setNickname("Terry");
+        signUpUserDTO.setPassword(nowPassword);
+        userService.signUp(signUpUserDTO);
+
+        //현재 비밀번호를 틀린 비밀번호로 입력
+        String newPassword = "qwerasdf";
+        UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
+        passwordDTO.setNowPassword(newPassword);
+        passwordDTO.setNewPassword(newPassword);
+
+        //when && then
+        assertThatThrownBy(() -> userService.updatePassword(email, passwordDTO))
+            .isInstanceOf(BadCredentialsException.class);
+
 
     }
 

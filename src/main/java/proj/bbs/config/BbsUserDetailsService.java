@@ -1,9 +1,8 @@
 package proj.bbs.config;
 
 import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,13 +19,13 @@ public class BbsUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         String foundEmail, foundPassword = null;
-        List<User> user = userRepository.findByEmail(email);
 
-        if (user.isEmpty()) {
+        try {
+            User user = userRepository.findByEmail(email);
+            foundEmail = user.getEmail();
+            foundPassword = user.getPassword();
+        } catch (EmptyResultDataAccessException e) {
             throw new UsernameNotFoundException("회원 E-mail을 찾을 수 없습니다.");
-        } else {
-            foundEmail = user.get(0).getEmail();
-            foundPassword = user.get(0).getPassword();
         }
 
         return new org.springframework.security.core.userdetails.User(foundEmail, foundPassword,

@@ -1,16 +1,16 @@
 package proj.bbs.user.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import proj.bbs.exception.NotFoundException;
 import proj.bbs.user.UserMapper;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
 import proj.bbs.user.service.dto.SignUpUserDTO;
+import proj.bbs.user.service.dto.UpdatePasswordDTO;
 import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @Service
@@ -33,20 +33,27 @@ public class UserService {
     }
 
     public UserInfoDTO getUserInfo(String email) {
-        List<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new NotFoundException("요청한 회원을 찾을 수 없습니다");
-        }
-        return userMapper.userToUserInfoDto(user.get(0));
+        User user = userRepository.findByEmail(email);
+        return userMapper.userToUserInfoDto(user);
     }
 
     @Transactional
     public void updateUserInfo(UpdateUserInfoDTO userDTO) {
-        List<User> user = userRepository.findByEmail(userDTO.getEmail());
-        if (user.isEmpty()) {
-            throw new NotFoundException("요청한 회원을 찾을 수 없습니다");
+        User user = userRepository.findByEmail(userDTO.getEmail());
+        user.updateUserInfo(userDTO);
+    }
+
+    /**
+     *  비밀번호 변경은 현재 비밀번호를 같이 보내서 사용자가 맞는지 한 번더 확인한다.
+     */
+    @Transactional
+    public void updatePassword(String email, UpdatePasswordDTO updatePasswordDTO) {
+        User user = userRepository.findByEmail(email);
+        if (!passwordEncoder.matches(updatePasswordDTO.getNowPassword(), user.getPassword())) {
+            throw new BadCredentialsException("비밀번호가 일치하지 않습니다");
         }
-        user.get(0).updateUserInfo(userDTO);
+
+        user.updatePassword(passwordEncoder.encode(updatePasswordDTO.getNewPassword()));
     }
 
 }
