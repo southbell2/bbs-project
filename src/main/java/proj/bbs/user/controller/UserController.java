@@ -1,6 +1,7 @@
 package proj.bbs.user.controller;
 
 import jakarta.validation.Valid;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import proj.bbs.config.UserPrincipal;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.service.UserService;
 import proj.bbs.user.service.dto.SignUpUserDTO;
@@ -25,7 +28,12 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody @Valid SignUpUserDTO userDTO) {
         userService.signUp(userDTO);
-        return ResponseEntity.ok().build();
+        URI createdUri = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/userinfo")
+            .build()
+            .toUri();
+        return ResponseEntity.created(createdUri).build();
     }
 
     @PostMapping("/login")
@@ -35,7 +43,9 @@ public class UserController {
 
     @GetMapping("/userinfo")
     public ResponseEntity<UserInfoDTO> userInfo(Authentication authentication) {
-        UserInfoDTO userInfo = userService.getUserInfo(authentication.getName());
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String email = userPrincipal.getEmail();
+        UserInfoDTO userInfo = userService.getUserInfo(email);
         return ResponseEntity.ok(userInfo);
     }
 
@@ -48,14 +58,16 @@ public class UserController {
     @PutMapping("/update-password")
     public ResponseEntity<?> updatePassword(Authentication authentication, @RequestBody @Valid
         UpdatePasswordDTO updatePasswordDTO) {
-        String email = authentication.getName();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String email = userPrincipal.getEmail();
         userService.updatePassword(email, updatePasswordDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUser(Authentication authentication) {
-        String email = authentication.getName();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String email = userPrincipal.getEmail();
         userService.deleteUser(email);
         return ResponseEntity.ok().build();
     }

@@ -14,3 +14,6 @@ spring:
 
 logging.level:
   org.hibernate.SQL: debug
+
+jwt:
+  secret-key: jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4

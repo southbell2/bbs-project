@@ -10,26 +10,37 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import proj.bbs.config.UserPrincipal;
 import proj.bbs.constants.SecurityConstants;
 
+@Component
 public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
+
+    @Value("${jwt.secret-key}")
+    private String key;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication) {
-            SecretKey key = Keys.hmacShaKeyFor(
-                SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
-            String jwt = Jwts.builder().setIssuer("BBS Proj").setSubject("JWT Token")
-                .claim("email", authentication.getName())
+
+        if (authentication != null) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+            SecretKey secretKey = Keys.hmacShaKeyFor(
+                key.getBytes(StandardCharsets.UTF_8));
+            String jwt = Jwts.builder().setSubject(String.valueOf(userPrincipal.getId()))
+                .claim("email", userPrincipal.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + 600_000_000L))
-                .signWith(key).compact();
-            response.setHeader(SecurityConstants.JWT_HEADER, jwt);
+                .signWith(secretKey).compact();
+            response.setHeader(SecurityConstants.ACCESS_HEADER, jwt);
         }
 
         filterChain.doFilter(request, response);
