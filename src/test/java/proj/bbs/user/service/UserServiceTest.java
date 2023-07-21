@@ -11,6 +11,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import proj.bbs.exception.BadRequestException;
+import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
@@ -162,7 +164,7 @@ class UserServiceTest {
 
         //when && then
         assertThatThrownBy(() -> userService.updatePassword(email, passwordDTO))
-            .isInstanceOf(BadCredentialsException.class);
+            .isInstanceOf(UnauthorizedException.class);
     }
 
     @Test

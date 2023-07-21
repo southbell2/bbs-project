@@ -1,6 +1,5 @@
 package proj.bbs.user.domain;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import proj.bbs.exception.BadRequestException;
+import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.post.domain.Post;
 import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
@@ -57,23 +58,31 @@ public class User {
     }
 
     /**
-     * 비밀번호를 해싱후 셋팅해야 한다.
+     *
+     * @param newPassword : 새로 업데이트할 비밀번호
+     * @param nowPassword : 유저가 본인 확인을 위해 보낸 현재 비밀번호
+     * @param passwordEncoder : 비밀번호 해시를 위한 인코더
+     *
+     * 유저가 보낸 현재 비밀번호가 맞는지 검증 후에
+     * 새로운 비밀번호를 해싱한 후 저장한다.
      */
-    public void updatePassword(String newPassword, PasswordEncoder passwordEncoder) {
-        setPassword(passwordEncoder.encode(newPassword));
+    public void updatePassword(String newPassword, String nowPassword, PasswordEncoder passwordEncoder) {
+        if (newPassword == null || newPassword.length() < 4 || 15 < newPassword.length()) {
+            throw new BadRequestException("비밀번호가 적절하지 않습니다.");
+        }
+
+        if (!passwordEncoder.matches(nowPassword, this.password)) {
+            throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
+        }
+
+        this.password = passwordEncoder.encode(newPassword);
     }
 
     private void setNickname(String nickname) {
-        Objects.requireNonNull(nickname, "닉네임을 입력하세요");
-        if (nickname.length() < 3 || 10 < nickname.length()) {
-            throw new IllegalArgumentException("닉네임의 크기가 적절하지 않습니다");
+        if (nickname == null || nickname.length() < 3 || 10 < nickname.length()) {
+            throw new BadRequestException("닉네임이 적절하지 않습니다.");
         }
         this.nickname = nickname;
-    }
-
-    private void setPassword(String password) {
-        Objects.requireNonNull(password, "비밀번호를 입력하세요");
-        this.password = password;
     }
 
 }

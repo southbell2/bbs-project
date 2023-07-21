@@ -8,7 +8,7 @@ import proj.bbs.user.service.dto.SignUpUserDTO;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-07-20T08:20:08+0900",
+    date = "2023-07-21T09:49:55+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
 )
 @Component
