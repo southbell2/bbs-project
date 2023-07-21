@@ -40,7 +40,8 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + 600_000_000L))
                 .signWith(secretKey).compact();
-            response.setHeader(SecurityConstants.ACCESS_HEADER, jwt);
+            response.setHeader(SecurityConstants.ACCESS_HEADER,
+                SecurityConstants.BEARER_TYPE + " " + jwt);
         }
 
         filterChain.doFilter(request, response);
