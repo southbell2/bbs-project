@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +18,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import proj.bbs.config.UserPrincipal;
 import proj.bbs.constants.SecurityConstants;
+import proj.bbs.security.jwt.TokenManager;
 
 @Component
-public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
+@RequiredArgsConstructor
+public class TokenGeneratorFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.secret-key}")
-    private String key;
+    private final TokenManager tokenManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -31,17 +33,9 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null) {
-            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
-            SecretKey secretKey = Keys.hmacShaKeyFor(
-                key.getBytes(StandardCharsets.UTF_8));
-            String jwt = Jwts.builder().setSubject(userPrincipal.getEmail())
-                .claim("id", userPrincipal.getId())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + 600_000_000L))
-                .signWith(secretKey).compact();
+            String accessToken = tokenManager.createAccessToken(authentication);
             response.setHeader(SecurityConstants.ACCESS_HEADER,
-                SecurityConstants.BEARER_TYPE + " " + jwt);
+                SecurityConstants.BEARER_TYPE + " " + accessToken);
         }
 
         filterChain.doFilter(request, response);

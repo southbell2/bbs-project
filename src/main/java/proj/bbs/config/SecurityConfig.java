@@ -11,15 +11,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import proj.bbs.security.filter.JWTTokenGeneratorFilter;
-import proj.bbs.security.filter.JWTTokenValidatorFilter;
+import proj.bbs.security.filter.TokenGeneratorFilter;
+import proj.bbs.security.filter.TokenValidatorFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
-    private final JWTTokenGeneratorFilter jwtTokenGeneratorFilter;
+    private final TokenValidatorFilter tokenValidatorFilter;
+    private final TokenGeneratorFilter tokenGeneratorFilter;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,8 +33,8 @@ public class SecurityConfig {
                     "/delete-user").authenticated()
                 .requestMatchers("/signup", "/hello").permitAll()
                 .requestMatchers(HttpMethod.POST, "/post").authenticated())
-            .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)
-            .addFilterAfter(jwtTokenGeneratorFilter, BasicAuthenticationFilter.class)
+            .addFilterBefore(tokenValidatorFilter, BasicAuthenticationFilter.class)
+            .addFilterAfter(tokenGeneratorFilter, BasicAuthenticationFilter.class)
             .httpBasic(Customizer.withDefaults());
 
         return http.build();
