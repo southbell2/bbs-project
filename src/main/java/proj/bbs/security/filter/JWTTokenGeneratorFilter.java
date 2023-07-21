@@ -1,4 +1,4 @@
-package proj.bbs.user.filter;
+package proj.bbs.security.filter;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -35,8 +35,8 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
 
             SecretKey secretKey = Keys.hmacShaKeyFor(
                 key.getBytes(StandardCharsets.UTF_8));
-            String jwt = Jwts.builder().setSubject(String.valueOf(userPrincipal.getId()))
-                .claim("email", userPrincipal.getEmail())
+            String jwt = Jwts.builder().setSubject(userPrincipal.getEmail())
+                .claim("id", userPrincipal.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + 600_000_000L))
                 .signWith(secretKey).compact();

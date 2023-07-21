@@ -1,4 +1,4 @@
-package proj.bbs.user.filter;
+package proj.bbs.security.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -41,7 +41,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 secretKey = Keys.hmacShaKeyFor(
                     key.getBytes(StandardCharsets.UTF_8));
             } catch (InvalidKeyException e) {
-                log.info("JWT Secret Key is Invalid");
+                log.info("JWT Secret Key가 적절하지 않습니다");
                 throw new InternalServerErrorException("Key error");
             }
 
@@ -51,16 +51,12 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 .parseClaimsJws(jwt)
                 .getBody();
 
-            try {
-                Long id = Long.parseLong(claims.getSubject());
-                String email = String.valueOf(claims.get("email"));
-                Authentication auth = new UsernamePasswordAuthenticationToken(new UserPrincipal(id, email), null,
-                    null);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (Exception e) {
-                throw new BadCredentialsException("Invalid Token");
-            }
-
+            Long id = Long.parseLong(claims.get("id").toString());
+            String email = claims.getSubject();
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                new UserPrincipal(id, email), null,
+                null);
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request, response);

@@ -34,13 +34,12 @@ public class BbsAuthenticationProvider implements AuthenticationProvider {
         try {
             user = userRepository.findByEmail(email);
         } catch (EmptyResultDataAccessException e) {
-            log.info("User Not Found by email, email = {}", email);
+            log.info("이메일로 회원을 찾을 수 없습니다 , email = {}", email);
             throw new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다.");
         }
 
         if (passwordEncoder.matches(rawPassword, user.getPassword())) {
             List<GrantedAuthority> authorities = new ArrayList<>();
-//            authorities.add(new SimpleGrantedAuthority(null));
             UserPrincipal userPrincipal = new UserPrincipal(user.getId(), user.getEmail());
             return new UsernamePasswordAuthenticationToken(userPrincipal, rawPassword, authorities);
         } else {

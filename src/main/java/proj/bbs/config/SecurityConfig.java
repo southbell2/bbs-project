@@ -11,8 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import proj.bbs.user.filter.JWTTokenGeneratorFilter;
-import proj.bbs.user.filter.JWTTokenValidatorFilter;
+import proj.bbs.security.filter.JWTTokenGeneratorFilter;
+import proj.bbs.security.filter.JWTTokenValidatorFilter;
 
 @Configuration
 @RequiredArgsConstructor
