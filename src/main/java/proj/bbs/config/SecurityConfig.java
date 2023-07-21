@@ -31,7 +31,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/login", "/userinfo", "/update-userinfo", "/update-password",
                     "/delete-user").authenticated()
-                .requestMatchers("/signup").permitAll()
+                .requestMatchers("/signup", "/hello").permitAll()
                 .requestMatchers(HttpMethod.POST, "/post").authenticated())
             .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)
             .addFilterAfter(jwtTokenGeneratorFilter, BasicAuthenticationFilter.class)

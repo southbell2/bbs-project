@@ -44,14 +44,17 @@ public class UserController {
     @GetMapping("/userinfo")
     public ResponseEntity<UserInfoDTO> userInfo(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        String email = userPrincipal.getEmail();
-        UserInfoDTO userInfo = userService.getUserInfo(email);
+        Long userId = userPrincipal.getId();
+        UserInfoDTO userInfo = userService.getUserInfo(userId);
         return ResponseEntity.ok(userInfo);
     }
 
     @PutMapping("/update-userinfo")
-    public ResponseEntity<?> updateUserInfo(@RequestBody @Valid UpdateUserInfoDTO userInfoDTO) {
-        userService.updateUserInfo(userInfoDTO);
+    public ResponseEntity<?> updateUserInfo(@RequestBody @Valid UpdateUserInfoDTO userInfoDTO,
+        Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Long userId = userPrincipal.getId();
+        userService.updateUserInfo(userId, userInfoDTO);
         return ResponseEntity.ok().build();
     }
 
@@ -59,17 +62,22 @@ public class UserController {
     public ResponseEntity<?> updatePassword(Authentication authentication, @RequestBody @Valid
         UpdatePasswordDTO updatePasswordDTO) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        String email = userPrincipal.getEmail();
-        userService.updatePassword(email, updatePasswordDTO);
+        Long userId = userPrincipal.getId();
+        userService.updatePassword(userId, updatePasswordDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUser(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        String email = userPrincipal.getEmail();
-        userService.deleteUser(email);
+        Long userId = userPrincipal.getId();
+        userService.deleteUser(userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/hello")
+    public ResponseEntity<?> helloController() {
+        return ResponseEntity.ok("Hello Test!");
     }
 
 }

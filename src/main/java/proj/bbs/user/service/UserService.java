@@ -32,26 +32,26 @@ public class UserService {
         userRepository.saveUser(user);
     }
 
-    public UserInfoDTO getUserInfo(String email) {
-        User user = userRepository.findByEmail(email);
+    public UserInfoDTO getUserInfo(Long userId) {
+        User user = userRepository.findById(userId);
         return userMapper.userToUserInfoDto(user);
     }
 
     @Transactional
-    public void updateUserInfo(UpdateUserInfoDTO userDTO) {
-        User user = userRepository.findByEmail(userDTO.getEmail());
+    public void updateUserInfo(Long userId, UpdateUserInfoDTO userDTO) {
+        User user = userRepository.findById(userId);
         user.updateUserInfo(userDTO);
     }
 
     @Transactional
-    public void updatePassword(String email, UpdatePasswordDTO updatePasswordDTO) {
-        User user = userRepository.findByEmail(email);
+    public void updatePassword(Long userId, UpdatePasswordDTO updatePasswordDTO) {
+        User user = userRepository.findById(userId);
         user.updatePassword(updatePasswordDTO.getNewPassword(), updatePasswordDTO.getNowPassword(), passwordEncoder);
     }
 
     @Transactional
-    public void deleteUser(String email) {
-        User user = userRepository.findByEmail(email);
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId);
         userRepository.deleteUser(user);
     }
 

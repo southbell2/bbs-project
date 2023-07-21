@@ -69,16 +69,17 @@ class UserServiceTest {
     @Test
     public void 회원_정보_얻기() {
         //given
-        SignUpUserDTO user = new SignUpUserDTO();
+        SignUpUserDTO userDTO = new SignUpUserDTO();
         String email = "test@test.com";
         String nickname = "Terry";
-        user.setEmail(email);
-        user.setNickname(nickname);
-        user.setPassword("12345");
-        userService.signUp(user);
+        userDTO.setEmail(email);
+        userDTO.setNickname(nickname);
+        userDTO.setPassword("12345");
+        userService.signUp(userDTO);
+        User user = userRepository.findByEmail(email);
 
         //when
-        UserInfoDTO userInfo = userService.getUserInfo(email);
+        UserInfoDTO userInfo = userService.getUserInfo(user.getId());
 
         //then
         assertThat(userInfo.getEmail()).isEqualTo(email);
@@ -88,11 +89,10 @@ class UserServiceTest {
     @Test
     public void 회원_정보_얻기_실패() {
         //given
-        String email = "test@test.com";
+        Long id = 1L;
 
         //when && then
-        assertThatThrownBy(() -> userService.getUserInfo(email))
-            .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(userService.getUserInfo(id)).isNull();
 
     }
 
@@ -106,17 +106,16 @@ class UserServiceTest {
         signUpUserDTO.setNickname(nickname);
         signUpUserDTO.setPassword("12345");
         userService.signUp(signUpUserDTO);
+        User user = userRepository.findByEmail(email);
 
         nickname = "Spring";
         UpdateUserInfoDTO userInfoDTO = new UpdateUserInfoDTO();
-        userInfoDTO.setEmail(email);
         userInfoDTO.setNickname(nickname);
 
         //when
-        userService.updateUserInfo(userInfoDTO);
+        userService.updateUserInfo(user.getId(), userInfoDTO);
 
         //then
-        User user = userRepository.findByEmail(email);
         assertThat(user.getNickname()).isEqualTo(nickname);
 
     }
@@ -131,6 +130,7 @@ class UserServiceTest {
         signUpUserDTO.setNickname("Terry");
         signUpUserDTO.setPassword(nowPassword);
         userService.signUp(signUpUserDTO);
+        User user = userRepository.findByEmail(email);
 
         String newPassword = "qwerasdf";
         UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
@@ -138,10 +138,9 @@ class UserServiceTest {
         passwordDTO.setNewPassword(newPassword);
 
         //when
-        userService.updatePassword(email, passwordDTO);
+        userService.updatePassword(user.getId(), passwordDTO);
 
         //then
-        User user = userRepository.findByEmail(email);
         assertThat(passwordEncoder.matches(newPassword, user.getPassword())).isTrue();
     }
 
@@ -155,6 +154,7 @@ class UserServiceTest {
         signUpUserDTO.setNickname("Terry");
         signUpUserDTO.setPassword(nowPassword);
         userService.signUp(signUpUserDTO);
+        User user = userRepository.findByEmail(email);
 
         //현재 비밀번호를 틀린 비밀번호로 입력
         String newPassword = "qwerasdf";
@@ -163,7 +163,7 @@ class UserServiceTest {
         passwordDTO.setNewPassword(newPassword);
 
         //when && then
-        assertThatThrownBy(() -> userService.updatePassword(email, passwordDTO))
+        assertThatThrownBy(() -> userService.updatePassword(user.getId(), passwordDTO))
             .isInstanceOf(UnauthorizedException.class);
     }
 
@@ -177,12 +177,12 @@ class UserServiceTest {
         signUpUserDTO.setNickname(nickname);
         signUpUserDTO.setPassword("12345");
         userService.signUp(signUpUserDTO);
+        User user = userRepository.findByEmail(email);
 
         //when
-        userService.deleteUser(email);
+        userService.deleteUser(user.getId());
 
         //then
-        assertThatThrownBy(() -> userService.getUserInfo(email))
-            .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(userService.getUserInfo(user.getId())).isNull();
     }
 }
