@@ -1,6 +1,6 @@
 package proj.bbs.security.filter;
 
-import static proj.bbs.constants.Routes.*;
+import static proj.bbs.constants.Routes.REFRESH_TOKEN;
 import static proj.bbs.constants.SecurityConstants.REFRESH_HEADER;
 
 import jakarta.servlet.FilterChain;
@@ -11,44 +11,36 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import proj.bbs.constants.SecurityConstants;
 import proj.bbs.exception.UnauthorizedException;
-import proj.bbs.security.AccessTokenManager;
 import proj.bbs.security.RefreshTokenManager;
+import proj.bbs.security.TokenStatus;
 
 @Component
 @RequiredArgsConstructor
-public class TokenGeneratorFilter extends OncePerRequestFilter {
+@Slf4j
+public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
 
-    private final AccessTokenManager accessTokenManager;
     private final RefreshTokenManager refreshTokenManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String refreshToken = getRefTokenFromCookie(request);
+        log.info("RefreshTokenValidatorFilter, RefreshToken = {}", refreshToken);
+        TokenStatus tokenStatus = refreshTokenManager.validateRefreshToken(refreshToken);
 
-        if (authentication == null) {
-            throw new UnauthorizedException("회원 정보가 일치하지 않습니다.");
+        if (tokenStatus != TokenStatus.OK) {
+            throw new UnauthorizedException("다시 로그인을 해주세요.");
         }
 
-        String accessToken = accessTokenManager.createAccessToken(authentication);
-        response.setHeader(SecurityConstants.ACCESS_HEADER,
-            SecurityConstants.BEARER_TYPE + " " + accessToken);
-
-        String oldRefToken = getRefTokenFromCookie(request);
-        String newRefToken;
-        if (oldRefToken == null) {
-            newRefToken = refreshTokenManager.createRefreshToken(authentication);
-        } else {
-            newRefToken = refreshTokenManager.reIssueRefreshToken(oldRefToken, authentication);
-        }
-        refreshTokenManager.addRefTokenToCookie(response, newRefToken);
+        Authentication authentication = refreshTokenManager.getAuthentication(refreshToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
@@ -68,7 +60,6 @@ public class TokenGeneratorFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        return !(LOGIN.getPath().equals(uri) || REFRESH_TOKEN.getPath().equals(uri));
+        return !REFRESH_TOKEN.getPath().equals(request.getRequestURI());
     }
 }

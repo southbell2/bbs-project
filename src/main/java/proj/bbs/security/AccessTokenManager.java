@@ -1,4 +1,4 @@
-package proj.bbs.security.jwt;
+package proj.bbs.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -15,25 +15,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import proj.bbs.config.UserPrincipal;
-import proj.bbs.security.TokenStatus;
+import proj.bbs.security.principal.UserPrincipal;
 
 @Component
 @Slf4j
-public class TokenManager {
+public class AccessTokenManager {
 
     private final String key;
     private final Long accessTokenValidityInMs;
-    private final Long refreshTokenValidityInMs;
     private SecretKey secretKey;
 
     @Autowired
-    public TokenManager(@Value("${jwt.secret-key}") String key,
-        @Value("${jwt.token-validity-in-sec}") Long accessTokenValidity,
-        @Value("${jwt.refresh-token-validity-in-sec}") Long refreshTokenValidity) {
+    public AccessTokenManager(@Value("${jwt.secret-key}") String key,
+        @Value("${jwt.token-validity-in-sec}") Long accessTokenValidity) {
         this.key = key;
         this.accessTokenValidityInMs = accessTokenValidity * 1000L;
-        this.refreshTokenValidityInMs = refreshTokenValidity * 1000L;
     }
 
     @PostConstruct
@@ -42,17 +38,17 @@ public class TokenManager {
             key.getBytes(StandardCharsets.UTF_8));
     }
 
-    public TokenStatus validateToken(String jwt) {
+    public TokenStatus validateAccessToken(String jwt) {
         try {
             Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(jwt);
-            return TokenStatus.ACCESS;
+            return TokenStatus.OK;
         } catch (ExpiredJwtException e) {
             return TokenStatus.EXPIRED;
         } catch (JwtException | IllegalArgumentException e) {
-            log.info("JwtException : {}", e);
+            log.info("JWT 검증 도중 예외 발생 e = {}", e);
             return TokenStatus.DENIED;
         }
     }
@@ -82,4 +78,5 @@ public class TokenManager {
             .setExpiration(exp)
             .signWith(secretKey).compact();
     }
+
 }

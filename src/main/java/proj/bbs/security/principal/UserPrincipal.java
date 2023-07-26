@@ -1,4 +1,4 @@
-package proj.bbs.config;
+package proj.bbs.security.principal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

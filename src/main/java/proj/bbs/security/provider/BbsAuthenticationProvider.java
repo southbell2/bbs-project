@@ -1,4 +1,4 @@
-package proj.bbs.config;
+package proj.bbs.security.provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import proj.bbs.security.principal.UserPrincipal;
 import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
