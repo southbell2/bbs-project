@@ -32,7 +32,6 @@ public class TokenGeneratorFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication == null) {
             throw new UnauthorizedException("회원 정보가 일치하지 않습니다.");
         }

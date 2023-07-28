@@ -25,8 +25,18 @@ public class RedisTokenRepository implements TokenRepository{
     }
 
     @Override
+    public Map<String, String> getTokenInfo(String token) {
+        return sync.hgetall(getTokenKey(token));
+    }
+
+    @Override
     public void deleteToken(String token) {
         sync.del(getTokenKey(token));
+    }
+
+    @Override
+    public boolean isTokenPresent(String token) {
+        return sync.exists(getTokenKey(token)) == 1;
     }
 
     private String getTokenKey(String token) {
@@ -34,7 +44,7 @@ public class RedisTokenRepository implements TokenRepository{
     }
 
     private Map<String, String> refreshTokenToMap(RefreshToken token) {
-        return Map.of("userId", String.valueOf(token.getUserId()),
+        return Map.of("id", String.valueOf(token.getUserId()),
             "email", token.getEmail(),
             "exp", String.valueOf(token.getExp()));
     }

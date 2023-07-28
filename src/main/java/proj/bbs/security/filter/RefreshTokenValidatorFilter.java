@@ -32,10 +32,10 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         String refreshToken = getRefTokenFromCookie(request);
-        log.info("RefreshTokenValidatorFilter, RefreshToken = {}", refreshToken);
         TokenStatus tokenStatus = refreshTokenManager.validateRefreshToken(refreshToken);
 
         if (tokenStatus != TokenStatus.OK) {
+            log.info("TokenStatus = {}", tokenStatus);
             throw new UnauthorizedException("다시 로그인을 해주세요.");
         }
 

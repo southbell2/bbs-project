@@ -3,6 +3,7 @@ package proj.bbs.security;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import proj.bbs.constants.Routes;
 import proj.bbs.constants.SecurityConstants;
+import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.security.entity.RefreshToken;
 import proj.bbs.security.principal.UserPrincipal;
 import proj.bbs.security.repository.TokenRepository;
@@ -38,6 +40,7 @@ public class RefreshTokenManager {
 
         tokenRepository.saveToken(new RefreshToken(token, userPrincipal.getId(),
             userPrincipal.getEmail(), exp));
+        log.info("new token created for user, userId = {}", userPrincipal.getId());
 
         return token;
     }
@@ -55,13 +58,30 @@ public class RefreshTokenManager {
         return newRefToken;
     }
 
-    public TokenStatus validateRefreshToken(String ref) {
+    public TokenStatus validateRefreshToken(String refreshToken) {
+        boolean tokenPresent = tokenRepository.isTokenPresent(refreshToken);
+        if (!tokenPresent) {
+            log.info("Token does not exist, token = {}", refreshToken);
+            return TokenStatus.DENIED;
+        }
+
+        long now = new Date().getTime();
+        Long exp = tokenRepository.getTokenExpiration(refreshToken);
+        if (exp <= now) {
+            log.info("Token Expired, token = {}", refreshToken);
+            return TokenStatus.EXPIRED;
+        }
+
         return TokenStatus.OK;
     }
 
-    public Authentication getAuthentication(String ref) {
-        return new UsernamePasswordAuthenticationToken(
-            new UserPrincipal(17L, "user@test"), null,
+    public Authentication getAuthentication(String refreshToken) {
+        Map<String, String> tokenInfoMap = tokenRepository.getTokenInfo(refreshToken);
+        long id = Long.parseLong(tokenInfoMap.get("id"));
+        String email = tokenInfoMap.get("email");
+
+        UserPrincipal userPrincipal = new UserPrincipal(id, email);
+        return new UsernamePasswordAuthenticationToken(userPrincipal, null,
             null);
     }
 
