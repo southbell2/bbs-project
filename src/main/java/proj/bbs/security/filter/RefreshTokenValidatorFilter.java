@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
 
         if (tokenStatus != TokenStatus.OK) {
             log.info("TokenStatus = {}", tokenStatus);
-            throw new UnauthorizedException("다시 로그인을 해주세요.");
+            throw new BadCredentialsException("다시 로그인을 해주세요.");
         }
 
         Authentication authentication = refreshTokenManager.getAuthentication(refreshToken);

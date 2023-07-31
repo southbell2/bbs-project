@@ -1,25 +1,25 @@
 package proj.bbs.security.filter;
 
-import static proj.bbs.constants.SecurityConstants.ACCESS_HEADER;
-import static proj.bbs.constants.SecurityConstants.UN_AUTHENTICATED_PATHS;
-import static proj.bbs.security.TokenStatus.EXPIRED;
-import static proj.bbs.security.TokenStatus.OK;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import proj.bbs.exception.AccessTokenExpiredException;
-import proj.bbs.exception.UnauthorizedException;
-import proj.bbs.security.TokenStatus;
 import proj.bbs.security.AccessTokenManager;
+import proj.bbs.security.TokenStatus;
+
+import java.io.IOException;
+
+import static proj.bbs.constants.SecurityConstants.ACCESS_HEADER;
+import static proj.bbs.constants.SecurityConstants.UN_AUTHENTICATED_PATHS;
+import static proj.bbs.security.TokenStatus.EXPIRED;
+import static proj.bbs.security.TokenStatus.OK;
 
 @Slf4j
 @Component
@@ -40,9 +40,9 @@ public class AccessTokenValidatorFilter extends OncePerRequestFilter {
         } else if (accessTokenStatus == EXPIRED) {
             response.setHeader("WWW-Authenticate",
                 "error='token_expired', error_description='The access token expired'");
-            throw new AccessTokenExpiredException("Access Token Expired");
+            throw new BadCredentialsException("Access Token Expired");
         } else {
-            throw new UnauthorizedException("Invalid Token");
+            throw new BadCredentialsException("Invalid Token");
         }
 
         filterChain.doFilter(request, response);

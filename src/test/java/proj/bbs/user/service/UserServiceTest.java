@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.user.controller.dto.UserInfoDTO;
@@ -19,6 +20,7 @@ import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 class UserServiceTest {
 
     @Autowired

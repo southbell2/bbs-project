@@ -8,8 +8,8 @@ import proj.bbs.user.service.dto.SignUpUserDTO;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-07-26T15:34:23+0900",
-    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.7 (Oracle Corporation)"
+    date = "2023-07-31T21:32:39+0900",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.6 (Oracle Corporation)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {

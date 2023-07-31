@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -36,7 +37,7 @@ public class BbsAuthenticationProvider implements AuthenticationProvider {
             user = userRepository.findByEmail(email);
         } catch (EmptyResultDataAccessException e) {
             log.info("이메일로 회원을 찾을 수 없습니다 , email = {}", email);
-            throw new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다.");
+            throw new BadCredentialsException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
         if (passwordEncoder.matches(rawPassword, user.getPassword())) {
@@ -44,7 +45,7 @@ public class BbsAuthenticationProvider implements AuthenticationProvider {
             UserPrincipal userPrincipal = new UserPrincipal(user.getId(), user.getEmail());
             return new UsernamePasswordAuthenticationToken(userPrincipal, rawPassword, authorities);
         } else {
-            throw new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다.");
+            throw new BadCredentialsException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
     }

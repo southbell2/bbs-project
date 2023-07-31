@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ public class TokenGeneratorFilter extends OncePerRequestFilter {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new UnauthorizedException("회원 정보가 일치하지 않습니다.");
+            throw new BadCredentialsException("회원 정보가 존재하지 않습니다.");
         }
 
         String accessToken = accessTokenManager.createAccessToken(authentication);
