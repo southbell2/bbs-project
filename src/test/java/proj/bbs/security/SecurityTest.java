@@ -2,7 +2,6 @@ package proj.bbs.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +11,18 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import proj.bbs.constants.Routes;
-import proj.bbs.constants.SecurityConstants;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.service.UserService;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static proj.bbs.constants.Routes.*;
-import static proj.bbs.constants.SecurityConstants.*;
+import static proj.bbs.constants.SecurityConstants.ACCESS_HEADER;
+import static proj.bbs.constants.SecurityConstants.REFRESH_HEADER;
 
 @SpringBootTest
 @Transactional
@@ -93,6 +91,54 @@ public class SecurityTest {
                 .andReturn().getResponse();
 
         UserInfoDTO userInfoDTO = objectMapper.readValue(userInfoResponse.getContentAsString(), UserInfoDTO.class);
+
+        //then
+        assertThat(userInfoDTO.getEmail()).isEqualTo(signUpEmail);
+        assertThat(userInfoDTO.getNickname()).isEqualTo(signUpNickname);
+    }
+
+    @Test
+    public void 잘못된_Access_Token_보내기() throws Exception {
+        //given
+        MockHttpServletResponse loginResponse = mockMvc.perform(post(LOGIN.getPath())
+                        .with(httpBasic(signUpEmail, signUpPassword)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        String accessToken = loginResponse.getHeader(ACCESS_HEADER);
+        Cookie refreshToken = loginResponse.getCookie(REFRESH_HEADER);
+        String wrongAccessToken = accessToken + "a";
+
+        //when && then
+        mockMvc.perform(get(USERINFO.getPath())
+                        .header(ACCESS_HEADER, wrongAccessToken)
+                        .cookie(refreshToken))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void Access_Token_재발급_받기() throws Exception {
+        //given
+        MockHttpServletResponse loginResponse = mockMvc.perform(post(LOGIN.getPath())
+                        .with(httpBasic(signUpEmail, signUpPassword)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        String accessToken = loginResponse.getHeader(ACCESS_HEADER);
+        Cookie refreshToken = loginResponse.getCookie(REFRESH_HEADER);
+
+        //when
+        String reIssueAccessToken = mockMvc.perform(get(REFRESH_TOKEN.getPath())
+                        .cookie(refreshToken))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getHeader(ACCESS_HEADER);
+
+        String responseBody = mockMvc.perform(get(USERINFO.getPath())
+                        .header(ACCESS_HEADER, reIssueAccessToken))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        UserInfoDTO userInfoDTO = objectMapper.readValue(responseBody, UserInfoDTO.class);
 
         //then
         assertThat(userInfoDTO.getEmail()).isEqualTo(signUpEmail);

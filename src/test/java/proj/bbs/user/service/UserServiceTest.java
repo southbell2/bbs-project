@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = true)
 class UserServiceTest {
 
     @Autowired

@@ -48,7 +48,7 @@ public class AccessTokenManager {
         } catch (ExpiredJwtException e) {
             return TokenStatus.EXPIRED;
         } catch (JwtException | IllegalArgumentException e) {
-            log.info("JWT 검증 도중 예외 발생 e = {}", e);
+            log.info("JWT 검증 도중 예외 발생 e = {}", e.getClass());
             return TokenStatus.DENIED;
         }
     }

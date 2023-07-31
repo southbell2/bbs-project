@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import proj.bbs.security.filter.ExceptionHandlerFilter;
 import proj.bbs.security.filter.RefreshTokenValidatorFilter;
 import proj.bbs.security.filter.TokenGeneratorFilter;
 import proj.bbs.security.filter.AccessTokenValidatorFilter;
@@ -28,19 +29,20 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.sessionManagement(
-                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(requests -> requests
-                .requestMatchers(REFRESH_TOKEN.getPath()).authenticated()
-                .requestMatchers(LOGIN.getPath(), USERINFO.getPath(), UPDATE_USERINFO.getPath(),
-                    UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).authenticated()
-                .requestMatchers(SIGNUP.getPath()).permitAll()
-                .requestMatchers(NEW_POST.getPath()).authenticated())
-            .addFilterBefore(refreshTokenValidatorFilter, BasicAuthenticationFilter.class)
-            .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
-            .addFilterAfter(tokenGeneratorFilter, BasicAuthenticationFilter.class)
-            .httpBasic(Customizer.withDefaults());
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(REFRESH_TOKEN.getPath()).authenticated()
+                        .requestMatchers(LOGIN.getPath(), USERINFO.getPath(), UPDATE_USERINFO.getPath(),
+                                UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).authenticated()
+                        .requestMatchers(SIGNUP.getPath()).permitAll()
+                        .requestMatchers(NEW_POST.getPath()).authenticated())
+                .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)
+                .addFilterBefore(new ExceptionHandlerFilter(), RefreshTokenValidatorFilter.class)
+                .addFilterAfter(tokenGeneratorFilter, BasicAuthenticationFilter.class)
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
