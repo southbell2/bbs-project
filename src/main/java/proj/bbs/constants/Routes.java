@@ -17,6 +17,9 @@ public enum Routes {
     DELETE_USER("/delete-user", DELETE),
     SIGNUP("/signup", POST),
 
+    ADD_USER_ROLE("/admin/add-user-role", POST),
+    DELETE_USER_ROLE("/admin/delete-user-role", DELETE),
+
     NEW_POST("/post", POST);
 
     private final String path;

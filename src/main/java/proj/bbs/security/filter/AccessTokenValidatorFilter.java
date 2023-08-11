@@ -35,7 +35,6 @@ public class AccessTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-
         String accessToken = resolveToken(request);
         TokenStatus accessTokenStatus = accessTokenManager.validateAccessToken(accessToken);
         if (accessTokenStatus == OK) {
@@ -46,7 +45,6 @@ public class AccessTokenValidatorFilter extends OncePerRequestFilter {
         } else {
             throw new BadCredentialsException("Invalid Token");
         }
-
         filterChain.doFilter(request, response);
     }
 

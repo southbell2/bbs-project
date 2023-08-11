@@ -55,4 +55,20 @@ public class UserService {
         userRepository.deleteUser(user);
     }
 
+    @Transactional
+    public void addUserRole(Long userId, String role) {
+        User user = userRepository.findByIdWithRole(userId);
+        UserRole userRole = new UserRole(RoleType.valueOf("ROLE_" + role));
+        user.addUserRole(userRole);
+        userRepository.saveUserRole(userRole);
+    }
+
+    @Transactional
+    public void deleteUserRole(Long userId, String role) {
+        User user = userRepository.findByIdWithRole(userId);
+        user.getRoles().stream()
+                .filter(userRole -> userRole.getRole().equals(RoleType.valueOf("ROLE_" + role)))
+                .forEach(userRepository::deleteUserRole);
+    }
+
 }

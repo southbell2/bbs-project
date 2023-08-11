@@ -3,6 +3,7 @@ package proj.bbs.user.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,7 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.user.controller.dto.UserInfoDTO;
+import proj.bbs.user.domain.RoleType;
 import proj.bbs.user.domain.User;
+import proj.bbs.user.domain.UserRole;
 import proj.bbs.user.repository.UserRepository;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 import proj.bbs.user.service.dto.UpdatePasswordDTO;
@@ -31,6 +34,8 @@ class UserServiceTest {
     UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    EntityManager em;
 
     @Test
     public void 회원_가입_성공() {
@@ -186,4 +191,42 @@ class UserServiceTest {
         //then
         assertThat(userService.getUserInfo(user.getId())).isNull();
     }
+
+    @Test
+    public void UserRole_추가_삭제() {
+        //추가
+        //Given
+        SignUpUserDTO userDTO = new SignUpUserDTO();
+        String email = "test@test.com";
+        String nickname = "Terry";
+        userDTO.setEmail(email);
+        userDTO.setNickname(nickname);
+        userDTO.setPassword("12345");
+        userService.signUp(userDTO);
+        Long id = userRepository.findByEmail(email).getId();
+
+        //when
+        userService.addUserRole(id, "ADMIN");
+        em.clear();
+
+        //then
+        boolean matchForTrue  = userRepository.findByIdWithRole(id)
+                .getRoles()
+                .stream()
+                .anyMatch(u -> u.getRole().equals(RoleType.ROLE_ADMIN));
+        assertThat(matchForTrue).isTrue();
+
+        //삭제
+        //when
+        userService.deleteUserRole(id, "ADMIN");
+        em.clear();
+
+        //then
+        boolean matchForFalse  = userRepository.findByIdWithRole(id)
+                .getRoles()
+                .stream()
+                .anyMatch(u -> u.getRole().equals(RoleType.ROLE_ADMIN));
+        assertThat(matchForFalse).isFalse();
+    }
+
 }

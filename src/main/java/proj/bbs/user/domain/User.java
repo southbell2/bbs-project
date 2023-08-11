@@ -1,11 +1,10 @@
 package proj.bbs.user.domain;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
-import java.util.*;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import proj.bbs.exception.BadRequestException;
@@ -13,6 +12,11 @@ import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.post.domain.Post;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 import proj.bbs.user.service.dto.UpdateUserInfoDTO;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -71,16 +75,17 @@ public class User {
         setPassword(newPassword, passwordEncoder);
     }
 
-    private void addUserRole(UserRole userRole) {
-        roles.add(userRole);
-        userRole.setUser(this);
+    public void addUserRole(UserRole userRole) {
+        if (roles.stream().noneMatch(u -> u.getRole().equals(userRole.getRole()))) {
+            roles.add(userRole);
+            userRole.setUser(this);
+        }
     }
 
     private void setPassword(String password, PasswordEncoder passwordEncoder) {
         if (password == null || password.length() < 4 || 15 < password.length()) {
             throw new BadRequestException("비밀번호가 적절하지 않습니다.");
         }
-
         this.password = passwordEncoder.encode(password);
     }
 

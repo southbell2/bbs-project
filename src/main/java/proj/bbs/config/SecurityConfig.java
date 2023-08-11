@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers(USERINFO.getPath(), UPDATE_USERINFO.getPath(),
                                 UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(SIGNUP.getPath(), LOGIN.getPath()).permitAll()
+                        .requestMatchers(ADD_USER_ROLE.getPath(), DELETE_USER_ROLE.getPath()).permitAll()  //테스트를 위해 잠시 퍼밋올
                         .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER"))
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)
