@@ -2,14 +2,16 @@ package proj.bbs.security.repository;
 
 import io.lettuce.core.api.async.RedisAsyncCommands;
 import io.lettuce.core.api.sync.RedisCommands;
+
 import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import proj.bbs.security.entity.RefreshToken;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisTokenRepository implements TokenRepository{
+public class RedisTokenRepository implements TokenRepository {
 
     private final RedisCommands<String, String> sync;
     private final RedisAsyncCommands<String, String> async;
@@ -45,7 +47,8 @@ public class RedisTokenRepository implements TokenRepository{
 
     private Map<String, String> refreshTokenToMap(RefreshToken token) {
         return Map.of("id", String.valueOf(token.getUserId()),
-            "email", token.getEmail(),
-            "exp", String.valueOf(token.getExp()));
+                "email", token.getEmail(),
+                "exp", String.valueOf(token.getExp()),
+                "authorities", String.join(",", token.getAuthorities()));
     }
 }

@@ -75,9 +75,5 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<?> helloController() {
-        return ResponseEntity.ok("Hello Test!");
-    }
 
 }

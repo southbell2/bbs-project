@@ -7,8 +7,5 @@ import proj.bbs.user.service.dto.SignUpUserDTO;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
-    User signUpDtoToUser(SignUpUserDTO signUpUserDTO);
-
     UserInfoDTO userToUserInfoDto(User user);
 }

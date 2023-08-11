@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import proj.bbs.user.UserMapper;
 import proj.bbs.user.controller.dto.UserInfoDTO;
+import proj.bbs.user.domain.RoleType;
 import proj.bbs.user.domain.User;
+import proj.bbs.user.domain.UserRole;
 import proj.bbs.user.repository.UserRepository;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 import proj.bbs.user.service.dto.UpdatePasswordDTO;
@@ -25,11 +27,8 @@ public class UserService {
 
     @Transactional
     public void signUp(SignUpUserDTO userDTO) {
-        String rawPassword = userDTO.getPassword();
-        String hashPassword = passwordEncoder.encode(rawPassword);
-        userDTO.setPassword(hashPassword);
-
-        User user = userMapper.signUpDtoToUser(userDTO);
+        UserRole userRole = new UserRole(RoleType.ROLE_USER);
+        User user = User.createUser(userDTO, passwordEncoder, userRole);
         userRepository.saveUser(user);
     }
 

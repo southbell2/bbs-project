@@ -1,6 +1,7 @@
 package proj.bbs.user.repository;
 
 import java.util.List;
+
 import proj.bbs.user.domain.User;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,21 @@ public class UserRepository {
     }
 
     public User findByEmail(String email) {
-        return em.createQuery("select u from User u where u.email = :email",
-                User.class)
-            .setParameter("email", email)
-            .getSingleResult();
+        return em.createQuery(
+                        "SELECT u " +
+                                "FROM User u " +
+                                "WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getSingleResult();
+    }
+
+    public User findByEmailWithRole(String email) {
+        return em.createQuery(
+                        "SELECT u FROM User u " +
+                                "JOIN FETCH u.roles r " +
+                                "WHERE u.email = :email", User.class)
+                .setParameter("email", email)
+                .getSingleResult();
     }
 
     public void deleteUser(User user) {

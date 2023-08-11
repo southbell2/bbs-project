@@ -4,30 +4,14 @@ import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 import proj.bbs.user.controller.dto.UserInfoDTO;
 import proj.bbs.user.domain.User;
-import proj.bbs.user.service.dto.SignUpUserDTO;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-07-31T21:32:39+0900",
+    date = "2023-08-11T11:04:42+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.6 (Oracle Corporation)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {
-
-    @Override
-    public User signUpDtoToUser(SignUpUserDTO signUpUserDTO) {
-        if ( signUpUserDTO == null ) {
-            return null;
-        }
-
-        User.UserBuilder user = User.builder();
-
-        user.email( signUpUserDTO.getEmail() );
-        user.password( signUpUserDTO.getPassword() );
-        user.nickname( signUpUserDTO.getNickname() );
-
-        return user.build();
-    }
 
     @Override
     public UserInfoDTO userToUserInfoDto(User user) {

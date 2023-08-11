@@ -13,7 +13,7 @@ import java.io.IOException;
 @Configuration
 public class EmbeddedRedisConfig {
 
-    private RedisServer redisServer;
+    private final RedisServer redisServer;
 
     public EmbeddedRedisConfig(@Value("${redis.port}") int port) throws IOException {
         this.redisServer = new RedisServer(port);

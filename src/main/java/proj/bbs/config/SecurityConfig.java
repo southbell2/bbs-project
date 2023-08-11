@@ -1,12 +1,14 @@
 package proj.bbs.config;
 
 import static proj.bbs.constants.Routes.*;
+import static proj.bbs.user.domain.RoleType.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,13 +33,13 @@ public class SecurityConfig {
         http.sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(REFRESH_TOKEN.getPath()).authenticated()
-                        .requestMatchers(LOGIN.getPath(), USERINFO.getPath(), UPDATE_USERINFO.getPath(),
-                                UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).authenticated()
-                        .requestMatchers(SIGNUP.getPath()).permitAll()
-                        .requestMatchers(NEW_POST.getPath()).authenticated())
+                        .requestMatchers(REFRESH_TOKEN.getPath()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(USERINFO.getPath(), UPDATE_USERINFO.getPath(),
+                                UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(SIGNUP.getPath(), LOGIN.getPath()).permitAll()
+                        .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER"))
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), RefreshTokenValidatorFilter.class)

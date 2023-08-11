@@ -2,9 +2,6 @@ package proj.bbs.security;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +10,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import proj.bbs.constants.Routes;
 import proj.bbs.constants.SecurityConstants;
-import proj.bbs.exception.UnauthorizedException;
 import proj.bbs.security.entity.RefreshToken;
 import proj.bbs.security.principal.UserPrincipal;
 import proj.bbs.security.repository.TokenRepository;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.springframework.security.core.authority.AuthorityUtils.authorityListToSet;
+import static org.springframework.security.core.authority.AuthorityUtils.commaSeparatedStringToAuthorityList;
 
 @Component
 @Slf4j
@@ -39,7 +42,7 @@ public class RefreshTokenManager {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         tokenRepository.saveToken(new RefreshToken(token, userPrincipal.getId(),
-            userPrincipal.getEmail(), exp));
+            userPrincipal.getEmail(), exp, authorityListToSet(authentication.getAuthorities())));
         log.info("new token created for user, userId = {}", userPrincipal.getId());
 
         return token;
@@ -53,7 +56,7 @@ public class RefreshTokenManager {
         tokenRepository.deleteToken(oldRefToken);
 
         tokenRepository.saveToken(new RefreshToken(newRefToken, userPrincipal.getId(),
-            userPrincipal.getEmail(), exp));
+            userPrincipal.getEmail(), exp, authorityListToSet(authentication.getAuthorities())));
 
         return newRefToken;
     }
@@ -79,10 +82,11 @@ public class RefreshTokenManager {
         Map<String, String> tokenInfoMap = tokenRepository.getTokenInfo(refreshToken);
         long id = Long.parseLong(tokenInfoMap.get("id"));
         String email = tokenInfoMap.get("email");
+        String authorities = tokenInfoMap.get("authorities");
 
         UserPrincipal userPrincipal = new UserPrincipal(id, email);
         return new UsernamePasswordAuthenticationToken(userPrincipal, null,
-            null);
+            commaSeparatedStringToAuthorityList(authorities));
     }
 
     public void addRefTokenToCookie(HttpServletResponse response, String refreshToken) {
