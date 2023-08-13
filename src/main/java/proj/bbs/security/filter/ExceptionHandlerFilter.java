@@ -22,12 +22,6 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             log.info("Security Error e = {}", e.getMessage());
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(e.getMessage());
-        } catch (AccessTokenExpiredException e) {
-            log.info("Security Error e = {}", e.getMessage());
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setHeader("WWW-Authenticate",
-                    "error='token_expired', error_description='The access token expired'");
-            response.getWriter().write(e.getMessage());
         }
     }
 }

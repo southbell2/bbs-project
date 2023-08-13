@@ -50,7 +50,9 @@ public class UserRepository {
     }
 
     public void deleteUser(User user) {
-        em.remove(user);
+        em.createQuery("DELETE FROM User u WHERE u.id = :id")
+                .setParameter("id", user.getId())
+                .executeUpdate();;
     }
 
     public void saveUserRole(UserRole userRole) {
@@ -58,7 +60,7 @@ public class UserRepository {
     }
 
     public void deleteUserRole(UserRole userRole) {
-        em.createNativeQuery("DELETE FROM user_role WHERE id = :id")
+        em.createQuery("DELETE FROM UserRole ur WHERE ur.id = :id")
                 .setParameter("id", userRole.getId())
                 .executeUpdate();
     }

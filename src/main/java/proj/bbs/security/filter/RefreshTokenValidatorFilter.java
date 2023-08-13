@@ -17,9 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import proj.bbs.exception.UnauthorizedException;
-import proj.bbs.security.RefreshTokenManager;
-import proj.bbs.security.TokenStatus;
+import proj.bbs.security.token.RefreshTokenManager;
+import proj.bbs.security.token.TokenStatus;
 
 @Component
 @RequiredArgsConstructor

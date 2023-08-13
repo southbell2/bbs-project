@@ -1,4 +1,4 @@
-package proj.bbs.security;
+package proj.bbs.security.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,7 +10,6 @@ import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 

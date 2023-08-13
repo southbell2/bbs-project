@@ -23,3 +23,9 @@ jwt:
   secret-key: jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4
   token-validity-in-sec: 300
   refresh-token-validity-in-sec: 604800
+
+server:
+  port: 8090
+
+admin:
+  ip: 127.0.0.1

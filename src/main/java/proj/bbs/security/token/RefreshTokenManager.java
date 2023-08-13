@@ -1,4 +1,4 @@
-package proj.bbs.security;
+package proj.bbs.security.token;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

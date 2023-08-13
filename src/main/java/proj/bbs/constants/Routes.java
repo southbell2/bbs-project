@@ -19,6 +19,9 @@ public enum Routes {
 
     ADD_USER_ROLE("/admin/add-user-role", POST),
     DELETE_USER_ROLE("/admin/delete-user-role", DELETE),
+    USERINFO_ADMIN("/admin/userinfo/*", GET),
+    DELETE_USER_ADMIN("/admin/delete-user", DELETE),
+    SIGNUP_ADMIN("/admin/register-5f4dcc3b5aa765d61d8327deb882cf99", POST),
 
     NEW_POST("/post", POST);
 

@@ -1,7 +1,6 @@
 package proj.bbs.config;
 
 import static proj.bbs.constants.Routes.*;
-import static proj.bbs.user.domain.RoleType.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import proj.bbs.security.IPAuthorizationManager;
 import proj.bbs.security.filter.ExceptionHandlerFilter;
 import proj.bbs.security.filter.RefreshTokenValidatorFilter;
 import proj.bbs.security.filter.TokenGeneratorFilter;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private final AccessTokenValidatorFilter accessTokenValidatorFilter;
     private final RefreshTokenValidatorFilter refreshTokenValidatorFilter;
     private final TokenGeneratorFilter tokenGeneratorFilter;
+    private final IPAuthorizationManager<RequestAuthorizationContext> ipAuthorizationManager;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,7 +41,9 @@ public class SecurityConfig {
                         .requestMatchers(USERINFO.getPath(), UPDATE_USERINFO.getPath(),
                                 UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(SIGNUP.getPath(), LOGIN.getPath()).permitAll()
-                        .requestMatchers(ADD_USER_ROLE.getPath(), DELETE_USER_ROLE.getPath()).permitAll()  //테스트를 위해 잠시 퍼밋올
+                        .requestMatchers(ADD_USER_ROLE.getPath(), DELETE_USER_ROLE.getPath(), USERINFO_ADMIN.getPath(),
+                                DELETE_USER_ADMIN.getPath()).hasRole("ADMIN")
+                        .requestMatchers(SIGNUP_ADMIN.getPath()).access(ipAuthorizationManager)
                         .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER"))
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)

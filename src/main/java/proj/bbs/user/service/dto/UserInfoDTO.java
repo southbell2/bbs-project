@@ -1,4 +1,4 @@
-package proj.bbs.user.controller.dto;
+package proj.bbs.user.service.dto;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
