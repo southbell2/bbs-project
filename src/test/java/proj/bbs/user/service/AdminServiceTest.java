@@ -75,14 +75,15 @@ public class AdminServiceTest {
 
         //삭제
         //when
-        adminService.deleteUserRole(id, "ADMIN");
+        adminService.deleteUserRole(id, "USER");
+        em.flush();
         em.clear();
 
         //then
         boolean matchForFalse  = userRepository.findByIdWithRole(id)
                 .getRoles()
                 .stream()
-                .anyMatch(u -> u.getRole().equals(RoleType.ROLE_ADMIN));
+                .anyMatch(u -> u.getRole().equals(RoleType.ROLE_USER));
         assertThat(matchForFalse).isFalse();
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import proj.bbs.exception.ForbiddenException;
 import proj.bbs.user.UserMapper;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.domain.UserRole;
@@ -40,7 +41,11 @@ public class AdminService {
 
     @Transactional
     public void deleteUserRole(Long userId, String role) {
-        User user = userRepository.findByIdWithRole(userId);user.getRoles().stream()
+        if (role.equalsIgnoreCase("admin")) {
+            throw new ForbiddenException("권한이 없습니다.");
+        }
+        User user = userRepository.findByIdWithRole(userId);
+        user.getRoles().stream()
                 .filter(userRole -> userRole.getRole().equals(valueOf("ROLE_" + role)))
                 .forEach(userRepository::deleteUserRole);
     }
