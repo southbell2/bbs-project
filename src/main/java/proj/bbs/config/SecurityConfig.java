@@ -42,7 +42,7 @@ public class SecurityConfig {
                                 UPDATE_PASSWORD.getPath(), DELETE_USER.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(SIGNUP.getPath(), LOGIN.getPath()).permitAll()
                         .requestMatchers(ADD_USER_ROLE.getPath(), DELETE_USER_ROLE.getPath(), USERINFO_ADMIN.getPath(),
-                                DELETE_USER_ADMIN.getPath()).hasRole("ADMIN")
+                                DELETE_USER_ADMIN.getPath(), USERINFO_LIST.getPath()).hasRole("ADMIN")
                         .requestMatchers(SIGNUP_ADMIN.getPath()).access(ipAuthorizationManager)
                         .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER"))
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)

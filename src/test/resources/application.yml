@@ -9,6 +9,7 @@ spring:
         show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+        default_batch_fetch_size: 100
 
 jwt:
   secret-key: jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4

@@ -1,6 +1,5 @@
 package proj.bbs.user.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -45,7 +44,7 @@ public class User {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<UserRole> roles = new ArrayList<>();
+    private List<UserRole> userRoles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<Post> myPosts = new ArrayList<>();
@@ -77,8 +76,8 @@ public class User {
     }
 
     public void addUserRole(UserRole userRole) {
-        if (roles.stream().noneMatch(u -> u.getRole().equals(userRole.getRole()))) {
-            roles.add(userRole);
+        if (userRoles.stream().noneMatch(u -> u.getRole().equals(userRole.getRole()))) {
+            userRoles.add(userRole);
             userRole.setUser(this);
         }
     }

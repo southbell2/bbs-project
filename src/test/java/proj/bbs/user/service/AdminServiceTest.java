@@ -44,7 +44,7 @@ public class AdminServiceTest {
 
         //then
         User adminUser = userRepository.findByEmailWithRole(email);
-        boolean matchForTrue = adminUser.getRoles().stream()
+        boolean matchForTrue = adminUser.getUserRoles().stream()
                 .anyMatch(u -> u.getRole().equals(RoleType.ROLE_ADMIN));
         assertThat(matchForTrue).isTrue();
     }
@@ -68,7 +68,7 @@ public class AdminServiceTest {
 
         //then
         boolean matchForTrue  = userRepository.findByIdWithRole(id)
-                .getRoles()
+                .getUserRoles()
                 .stream()
                 .anyMatch(u -> u.getRole().equals(RoleType.ROLE_ADMIN));
         assertThat(matchForTrue).isTrue();
@@ -81,7 +81,7 @@ public class AdminServiceTest {
 
         //then
         boolean matchForFalse  = userRepository.findByIdWithRole(id)
-                .getRoles()
+                .getUserRoles()
                 .stream()
                 .anyMatch(u -> u.getRole().equals(RoleType.ROLE_USER));
         assertThat(matchForFalse).isFalse();

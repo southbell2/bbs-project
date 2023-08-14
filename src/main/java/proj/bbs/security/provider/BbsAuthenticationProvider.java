@@ -45,7 +45,7 @@ public class BbsAuthenticationProvider implements AuthenticationProvider {
 
         if (passwordEncoder.matches(rawPassword, user.getPassword())) {
             UserPrincipal userPrincipal = new UserPrincipal(user.getId(), user.getEmail());
-            return new UsernamePasswordAuthenticationToken(userPrincipal, rawPassword, getGrantedAuthorities(user.getRoles()));
+            return new UsernamePasswordAuthenticationToken(userPrincipal, rawPassword, getGrantedAuthorities(user.getUserRoles()));
         } else {
             throw new BadCredentialsException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }

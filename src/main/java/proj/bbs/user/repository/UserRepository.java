@@ -25,7 +25,7 @@ public class UserRepository {
     public User findByIdWithRole(Long id) {
         return em.createQuery(
                         "SELECT u FROM User u " +
-                                "JOIN FETCH u.roles r " +
+                                "JOIN FETCH u.userRoles r " +
                                 "WHERE u.id = :id", User.class)
                 .setParameter("id", id)
                 .getSingleResult();
@@ -43,7 +43,7 @@ public class UserRepository {
     public User findByEmailWithRole(String email) {
         return em.createQuery(
                         "SELECT u FROM User u " +
-                                "JOIN FETCH u.roles r " +
+                                "JOIN FETCH u.userRoles r " +
                                 "WHERE u.email = :email", User.class)
                 .setParameter("email", email)
                 .getSingleResult();
@@ -52,7 +52,18 @@ public class UserRepository {
     public void deleteUser(User user) {
         em.createQuery("DELETE FROM User u WHERE u.id = :id")
                 .setParameter("id", user.getId())
-                .executeUpdate();;
+                .executeUpdate();
+    }
+
+    public List<User> findPagedUsers(Long beforeId, Integer limit) {
+        return em.createQuery(
+                        "SELECT u FROM User u " +
+                                "WHERE u.id > :id " +
+                                "ORDER BY u.id DESC", User.class)
+                .setFirstResult(0)
+                .setMaxResults(limit)
+                .setParameter("id", beforeId)
+                .getResultList();
     }
 
     public void saveUserRole(UserRole userRole) {

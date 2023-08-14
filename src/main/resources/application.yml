@@ -11,6 +11,7 @@ spring:
         show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
+        default_batch_fetch_size: 100
 
 logging.level:
   org.hibernate.SQL: debug
@@ -25,7 +26,9 @@ jwt:
   refresh-token-validity-in-sec: 604800
 
 server:
-  port: 8090
+  port: 8080
 
 admin:
   ip: 127.0.0.1
+
+# -Djava.net.preferIPv4Stack=true

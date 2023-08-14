@@ -4,20 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import proj.bbs.user.domain.RoleType;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
 @Setter
-public class UserInfoAdminDTO {
-
+@Getter
+public class PagedUserDTO {
     private Long id;
-
     private String email;
-
-    private String nickname;
-
-    private LocalDateTime createdAt;
-
     private List<RoleType> roles;
 }

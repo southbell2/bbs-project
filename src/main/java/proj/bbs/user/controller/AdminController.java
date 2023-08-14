@@ -6,13 +6,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import proj.bbs.user.controller.dto.PagedUserResponseDTO;
 import proj.bbs.user.controller.dto.UserRoleDTO;
 import proj.bbs.user.service.AdminService;
 import proj.bbs.user.service.UserService;
+import proj.bbs.user.service.dto.PagedUserDTO;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 import proj.bbs.user.service.dto.UserInfoAdminDTO;
 
 import java.net.URI;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -53,5 +56,12 @@ public class AdminController {
     public ResponseEntity<?> deleteUser(@RequestParam Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/admin/userinfo-list")
+    public ResponseEntity<PagedUserResponseDTO> getUserInfoList(@RequestParam(defaultValue = "0") long beforeId, @RequestParam(defaultValue = "10") int limit) {
+        List<PagedUserDTO> pagedUsers = adminService.getPagedUsers(beforeId, limit);
+        PagedUserResponseDTO pagedUserResponseDTO = new PagedUserResponseDTO(pagedUsers);
+        return ResponseEntity.ok(pagedUserResponseDTO);
     }
 }
