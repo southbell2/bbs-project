@@ -25,7 +25,7 @@ public class AdminController {
     private final UserService userService;
 
     @PostMapping("/admin/register-5f4dcc3b5aa765d61d8327deb882cf99")
-    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpUserDTO userDTO) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpUserDTO userDTO) {
         adminService.signUpAdmin(userDTO);
         URI createdUri = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
@@ -36,13 +36,13 @@ public class AdminController {
     }
 
     @PostMapping("/admin/add-user-role")
-    public ResponseEntity<?> addUserRole(@RequestBody UserRoleDTO userRoleDTO) {
+    public ResponseEntity<Void> addUserRole(@RequestBody UserRoleDTO userRoleDTO) {
         adminService.addUserRole(userRoleDTO.getUserId(), userRoleDTO.getRole());
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/admin/delete-user-role")
-    public ResponseEntity<?> deleteUserRole(@RequestBody UserRoleDTO userRoleDTO) {
+    public ResponseEntity<Void> deleteUserRole(@RequestBody UserRoleDTO userRoleDTO) {
         adminService.deleteUserRole(userRoleDTO.getUserId(), userRoleDTO.getRole());
         return ResponseEntity.ok().build();
     }
@@ -53,7 +53,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/admin/delete-user")
-    public ResponseEntity<?> deleteUser(@RequestParam Long userId) {
+    public ResponseEntity<Void> deleteUser(@RequestParam Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();
     }

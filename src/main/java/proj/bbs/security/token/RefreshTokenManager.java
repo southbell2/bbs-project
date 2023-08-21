@@ -62,16 +62,18 @@ public class RefreshTokenManager {
     }
 
     public TokenStatus validateRefreshToken(String refreshToken) {
+        if (refreshToken == null) {
+            return TokenStatus.DENIED;
+        }
+
         boolean tokenPresent = tokenRepository.isTokenPresent(refreshToken);
         if (!tokenPresent) {
-            log.info("Token does not exist, token = {}", refreshToken);
             return TokenStatus.DENIED;
         }
 
         long now = new Date().getTime();
         Long exp = tokenRepository.getTokenExpiration(refreshToken);
         if (exp <= now) {
-            log.info("Token Expired, token = {}", refreshToken);
             return TokenStatus.EXPIRED;
         }
 

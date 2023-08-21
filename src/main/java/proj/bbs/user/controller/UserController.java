@@ -1,7 +1,11 @@
 package proj.bbs.user.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Arrays;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,20 +17,24 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import proj.bbs.security.principal.UserPrincipal;
+import proj.bbs.security.repository.TokenRepository;
 import proj.bbs.user.service.dto.UserInfoDTO;
 import proj.bbs.user.service.UserService;
 import proj.bbs.user.service.dto.SignUpUserDTO;
 import proj.bbs.user.service.dto.UpdatePasswordDTO;
 import proj.bbs.user.service.dto.UpdateUserInfoDTO;
 
+import static proj.bbs.constants.SecurityConstants.REFRESH_HEADER;
+
 @Controller
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final TokenRepository tokenRepository;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody @Valid SignUpUserDTO userDTO) {
+    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpUserDTO userDTO) {
         userService.signUp(userDTO);
         URI createdUri = ServletUriComponentsBuilder
             .fromCurrentContextPath()
@@ -37,7 +45,17 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login() {
+    public ResponseEntity<Void> login() {
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String refreshToken = getRefTokenFromCookie(request);
+        if (refreshToken != null) {
+            tokenRepository.deleteToken(refreshToken);
+        }
+
         return ResponseEntity.ok().build();
     }
 
@@ -50,7 +68,7 @@ public class UserController {
     }
 
     @PutMapping("/update-userinfo")
-    public ResponseEntity<?> updateUserInfo(@RequestBody @Valid UpdateUserInfoDTO userInfoDTO,
+    public ResponseEntity<Void> updateUserInfo(@RequestBody @Valid UpdateUserInfoDTO userInfoDTO,
         Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Long userId = userPrincipal.getId();
@@ -59,7 +77,7 @@ public class UserController {
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<?> updatePassword(Authentication authentication, @RequestBody @Valid
+    public ResponseEntity<Void> updatePassword(Authentication authentication, @RequestBody @Valid
         UpdatePasswordDTO updatePasswordDTO) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Long userId = userPrincipal.getId();
@@ -68,12 +86,23 @@ public class UserController {
     }
 
     @DeleteMapping("/delete-user")
-    public ResponseEntity<?> deleteUser(Authentication authentication) {
+    public ResponseEntity<Void> deleteUser(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Long userId = userPrincipal.getId();
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();
     }
 
-
+    private String getRefTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String refToken = null;
+        if (cookies != null) {
+            refToken = Arrays.stream(cookies)
+                    .filter(cookie -> REFRESH_HEADER.equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
+        return refToken;
+    }
 }

@@ -186,6 +186,8 @@ class UserServiceTest {
 
         //when
         userService.deleteUser(user.getId());
+        em.flush();
+        em.clear();
 
         //then
         assertThat(userService.getUserInfo(user.getId())).isNull();
