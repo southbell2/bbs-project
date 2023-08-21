@@ -60,8 +60,13 @@ public class AdminController {
 
     @GetMapping("/admin/userinfo-list")
     public ResponseEntity<PagedUserResponseDTO> getUserInfoList(@RequestParam(defaultValue = "0") long beforeId, @RequestParam(defaultValue = "10") int limit) {
+        beforeId = convertIfDefaultId(beforeId);
         List<PagedUserDTO> pagedUsers = adminService.getPagedUsers(beforeId, limit);
         PagedUserResponseDTO pagedUserResponseDTO = new PagedUserResponseDTO(pagedUsers);
         return ResponseEntity.ok(pagedUserResponseDTO);
+    }
+
+    private long convertIfDefaultId(long beforeId) {
+        return (beforeId == 0) ? Long.MAX_VALUE : beforeId;
     }
 }

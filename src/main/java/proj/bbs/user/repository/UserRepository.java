@@ -58,7 +58,7 @@ public class UserRepository {
     public List<User> findPagedUsers(Long beforeId, Integer limit) {
         return em.createQuery(
                         "SELECT u FROM User u " +
-                                "WHERE u.id > :id " +
+                                "WHERE u.id < :id " +
                                 "ORDER BY u.id DESC", User.class)
                 .setFirstResult(0)
                 .setMaxResults(limit)
