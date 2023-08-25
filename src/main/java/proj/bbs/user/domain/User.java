@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import proj.bbs.exception.BadRequestException;
@@ -43,6 +44,7 @@ public class User {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @BatchSize(size = 100)
     private List<UserRole> userRoles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")

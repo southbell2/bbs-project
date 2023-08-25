@@ -24,7 +24,7 @@ public class UserRepository {
 
     public User findByIdWithRole(Long id) {
         return em.createQuery(
-                        "SELECT u FROM User u " +
+                        "SELECT distinct u FROM User u " +
                                 "JOIN FETCH u.userRoles r " +
                                 "WHERE u.id = :id", User.class)
                 .setParameter("id", id)
@@ -42,7 +42,7 @@ public class UserRepository {
 
     public User findByEmailWithRole(String email) {
         return em.createQuery(
-                        "SELECT u FROM User u " +
+                        "SELECT distinct u FROM User u " +
                                 "JOIN FETCH u.userRoles r " +
                                 "WHERE u.email = :email", User.class)
                 .setParameter("email", email)

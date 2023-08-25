@@ -10,7 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import proj.bbs.user.domain.RoleType;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
+import proj.bbs.user.service.dto.PagedUserDTO;
 import proj.bbs.user.service.dto.SignUpUserDTO;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
