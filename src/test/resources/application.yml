@@ -6,13 +6,15 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
         default_batch_fetch_size: 100
   sql:
     init:
       mode: always
+
+logging.level:
+  org.hibernate.SQL: debug
 
 jwt:
   secret-key: jxgEQeXHuPq8VdbyYFNkANdudQ53YUn4

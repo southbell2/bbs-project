@@ -1,6 +1,5 @@
 package proj.bbs.security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.annotation.Transactional;
-import proj.bbs.constants.Routes;
-import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
-import proj.bbs.user.service.AdminService;
 import proj.bbs.user.service.dto.UserInfoDTO;
 import proj.bbs.user.service.UserService;
 import proj.bbs.user.service.dto.SignUpUserDTO;
@@ -50,19 +46,19 @@ public class SecurityTest {
     @Value("${admin.ip}")
     private String adminIP;
 
-    String adminEmail;
-    String adminNickname;
-    String adminPassword;
+    String testEmail;
+    String testNickname;
+    String testPassword;
 
     @BeforeEach
     public void setUp() {
         SignUpUserDTO userDTO = new SignUpUserDTO();
-        adminEmail = "test@test.com";
-        adminNickname = "Terry";
-        adminPassword = "12345";
-        userDTO.setEmail(adminEmail);
-        userDTO.setNickname(adminNickname);
-        userDTO.setPassword(adminPassword);
+        testEmail = "test@test.com";
+        testNickname = "Terry";
+        testPassword = "12345";
+        userDTO.setEmail(testEmail);
+        userDTO.setNickname(testNickname);
+        userDTO.setPassword(testPassword);
 
         userService.signUp(userDTO);
     }
@@ -70,7 +66,7 @@ public class SecurityTest {
     @Test
     public void 로그인_성공() throws Exception {
         mockMvc.perform(post(LOGIN.getPath())
-                        .with(httpBasic(adminEmail, adminPassword)))
+                        .with(httpBasic(testEmail, testPassword)))
                 .andExpect(status().isOk());
     }
 
@@ -81,7 +77,7 @@ public class SecurityTest {
 
         //when && then
         mockMvc.perform(post(LOGIN.getPath())
-                        .with(httpBasic(adminEmail, wrongPassword)))
+                        .with(httpBasic(testEmail, wrongPassword)))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -89,7 +85,7 @@ public class SecurityTest {
     public void 로그인_성공_후_유저정보얻기() throws Exception {
         //given
         MockHttpServletResponse loginResponse = mockMvc.perform(post(LOGIN.getPath())
-                        .with(httpBasic(adminEmail, adminPassword)))
+                        .with(httpBasic(testEmail, testPassword)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -106,15 +102,15 @@ public class SecurityTest {
         UserInfoDTO userInfoDTO = objectMapper.readValue(userInfoResponse.getContentAsString(), UserInfoDTO.class);
 
         //then
-        assertThat(userInfoDTO.getEmail()).isEqualTo(adminEmail);
-        assertThat(userInfoDTO.getNickname()).isEqualTo(adminNickname);
+        assertThat(userInfoDTO.getEmail()).isEqualTo(testEmail);
+        assertThat(userInfoDTO.getNickname()).isEqualTo(testNickname);
     }
 
     @Test
     public void 잘못된_Access_Token_보내기() throws Exception {
         //given
         MockHttpServletResponse loginResponse = mockMvc.perform(post(LOGIN.getPath())
-                        .with(httpBasic(adminEmail, adminPassword)))
+                        .with(httpBasic(testEmail, testPassword)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -133,7 +129,7 @@ public class SecurityTest {
     public void Access_Token_재발급_받기() throws Exception {
         //given
         MockHttpServletResponse loginResponse = mockMvc.perform(post(LOGIN.getPath())
-                        .with(httpBasic(adminEmail, adminPassword)))
+                        .with(httpBasic(testEmail, testPassword)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -154,20 +150,20 @@ public class SecurityTest {
         UserInfoDTO userInfoDTO = objectMapper.readValue(responseBody, UserInfoDTO.class);
 
         //then
-        assertThat(userInfoDTO.getEmail()).isEqualTo(adminEmail);
-        assertThat(userInfoDTO.getNickname()).isEqualTo(adminNickname);
+        assertThat(userInfoDTO.getEmail()).isEqualTo(testEmail);
+        assertThat(userInfoDTO.getNickname()).isEqualTo(testNickname);
     }
 
     @Test
     public void ADMIN_회원가입() throws Exception {
         //given
         SignUpUserDTO userDTO = new SignUpUserDTO();
-        adminEmail = "admin@test.com";
-        adminNickname = "admin";
-        adminPassword = "12345";
-        userDTO.setEmail(adminEmail);
-        userDTO.setNickname(adminNickname);
-        userDTO.setPassword(adminPassword);
+        testEmail = "admin@test.com";
+        testNickname = "admin";
+        testPassword = "12345";
+        userDTO.setEmail(testEmail);
+        userDTO.setNickname(testNickname);
+        userDTO.setPassword(testPassword);
         byte[] content = objectMapper.writeValueAsBytes(userDTO);
 
         MockHttpServletRequestBuilder request = post(SIGNUP_ADMIN.getPath())

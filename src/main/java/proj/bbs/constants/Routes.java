@@ -24,7 +24,8 @@ public enum Routes {
     SIGNUP_ADMIN("/admin/register-5f4dcc3b5aa765d61d8327deb882cf99", POST),
     USERINFO_LIST("/admin/userinfo-list", GET),
 
-    NEW_POST("/post", POST);
+    NEW_POST("/post", POST),
+    SHOW_POST("/post/*", GET);
 
     private final String path;
     private final HttpMethod method;

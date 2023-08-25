@@ -13,3 +13,12 @@ CREATE TABLE IF NOT EXISTS user_role (
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS posts (
+  post_id BIGINT PRIMARY KEY,
+  views BIGINT DEFAULT 0,
+  title VARCHAR(50) NOT NULL,
+  content VARCHAR(5000) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  user_id BIGINT NOT NULL,
+  nickname VARCHAR(10) NOT NULL
+);
