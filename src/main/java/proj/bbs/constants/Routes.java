@@ -25,6 +25,8 @@ public enum Routes {
     USERINFO_LIST("/admin/userinfo-list", GET),
 
     NEW_POST("/post", POST),
+    UPDATE_POST("/post/*", PUT),
+    DELETE_POST("/post/*", DELETE),
     SHOW_POST("/post/*", GET);
 
     private final String path;

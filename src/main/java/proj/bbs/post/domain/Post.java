@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import proj.bbs.post.service.dto.NewPostDTO;
+import proj.bbs.post.service.dto.UpdatePostDTO;
 import proj.bbs.user.domain.User;
 
 @Entity
@@ -54,6 +55,15 @@ public class Post {
         post.setUser(user);
         post.setNickname(user.getNickname());
         return post;
+    }
+
+    public void updatePost(UpdatePostDTO updatePostDTO) {
+        setTitle(updatePostDTO.getTitle());
+        setContent(updatePostDTO.getContent());
+    }
+
+    public void incrementViews() {
+        views += 1;
     }
 
     private void setId(Long id) {

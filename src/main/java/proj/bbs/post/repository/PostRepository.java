@@ -18,4 +18,10 @@ public class PostRepository {
     public Post findById(Long id) {
         return em.find(Post.class, id);
     }
+
+    public void deletePost(Long postId) {
+        em.createQuery("DELETE FROM Post p WHERE p.id = :id")
+                .setParameter("id", postId)
+                .executeUpdate();
+    }
 }

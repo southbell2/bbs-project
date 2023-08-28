@@ -45,6 +45,8 @@ public class SecurityConfig {
                                 DELETE_USER_ADMIN.getPath(), USERINFO_LIST.getPath()).hasRole("ADMIN")
                         .requestMatchers(SIGNUP_ADMIN.getPath()).access(ipAuthorizationManager)
                         .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(UPDATE_POST.getMethod(), UPDATE_POST.getPath()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(DELETE_POST.getMethod(), DELETE_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(SHOW_POST.getMethod(), SHOW_POST.getPath()).permitAll())
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)

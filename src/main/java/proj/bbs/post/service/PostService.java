@@ -9,6 +9,7 @@ import proj.bbs.post.domain.Post;
 import proj.bbs.post.repository.PostRepository;
 import proj.bbs.post.service.dto.NewPostDTO;
 import proj.bbs.post.service.dto.PostDTO;
+import proj.bbs.post.service.dto.UpdatePostDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
 
@@ -30,9 +31,22 @@ public class PostService {
         return id;
     }
 
+    @Transactional
     public PostDTO getPost(Long postId) {
         Post post = postRepository.findById(postId);
+        post.incrementViews();
         return postMapper.postToPostDto(post);
+    }
+
+    @Transactional
+    public void updatePost(UpdatePostDTO updatePostDTO, Long postId) {
+        Post post = postRepository.findById(postId);
+        post.updatePost(updatePostDTO);
+    }
+
+    @Transactional
+    public void deletePost(Long postId) {
+        postRepository.deletePost(postId);
     }
 
 }
