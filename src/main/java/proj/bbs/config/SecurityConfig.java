@@ -1,10 +1,12 @@
 package proj.bbs.config;
 
+import static org.springframework.http.HttpMethod.*;
 import static proj.bbs.constants.Routes.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -47,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(UPDATE_POST.getMethod(), UPDATE_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(DELETE_POST.getMethod(), DELETE_POST.getPath()).hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(SHOW_POST.getMethod(), SHOW_POST.getPath()).permitAll())
+                        .requestMatchers(GET, SHOW_POST.getPath(), PAGED_POSTS.getPath()).permitAll())
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), RefreshTokenValidatorFilter.class)

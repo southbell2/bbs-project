@@ -8,10 +8,13 @@ import proj.bbs.post.PostMapper;
 import proj.bbs.post.domain.Post;
 import proj.bbs.post.repository.PostRepository;
 import proj.bbs.post.service.dto.NewPostDTO;
+import proj.bbs.post.service.dto.PagedPostDTO;
 import proj.bbs.post.service.dto.PostDTO;
 import proj.bbs.post.service.dto.UpdatePostDTO;
 import proj.bbs.user.domain.User;
 import proj.bbs.user.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,13 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         postRepository.deletePost(postId);
+    }
+
+    public List<PagedPostDTO> getPagedPosts(Long beforeId, Integer limit) {
+        List<Post> pagedPosts = postRepository.findPagedPosts(beforeId, limit);
+        return pagedPosts.stream()
+                .map(postMapper::postToPagedPostDto)
+                .toList();
     }
 
 }

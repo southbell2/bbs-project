@@ -10,12 +10,11 @@ import proj.bbs.exception.ForbiddenException;
 import proj.bbs.post.domain.Post;
 import proj.bbs.post.repository.PostRepository;
 import proj.bbs.post.service.PostService;
-import proj.bbs.post.service.dto.NewPostDTO;
-import proj.bbs.post.service.dto.PostDTO;
-import proj.bbs.post.service.dto.UpdatePostDTO;
+import proj.bbs.post.service.dto.*;
 import proj.bbs.security.principal.UserPrincipal;
 
 import java.net.URI;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -76,11 +75,23 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/post")
+    public ResponseEntity<ResponsePagedPosts> showPagedPosts(@RequestParam(defaultValue = "0") long beforeId, @RequestParam(defaultValue = "10") int limit) {
+        beforeId = convertIfDefaultId(beforeId);
+        List<PagedPostDTO> pagedPosts = postService.getPagedPosts(beforeId, limit);
+        ResponsePagedPosts responsePagedPosts = new ResponsePagedPosts(pagedPosts);
+        return ResponseEntity.ok(responsePagedPosts);
+    }
+
     private boolean isPostWriter(Long postUserId, Long loginUserId) {
         if (postUserId == null || loginUserId == null) {
             return false;
         }
         return postUserId.equals(loginUserId);
+    }
+
+    private long convertIfDefaultId(long beforeId) {
+        return (beforeId == 0) ? Long.MAX_VALUE : beforeId;
     }
 
 }

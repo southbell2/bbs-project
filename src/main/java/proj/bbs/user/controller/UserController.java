@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.Arrays;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -37,12 +38,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpUserDTO userDTO) {
         userService.signUp(userDTO);
-        URI createdUri = ServletUriComponentsBuilder
-            .fromCurrentContextPath()
-            .path("/userinfo")
-            .build()
-            .toUri();
-        return ResponseEntity.created(createdUri).build();
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

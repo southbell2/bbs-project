@@ -27,6 +27,7 @@ public enum Routes {
     NEW_POST("/post", POST),
     UPDATE_POST("/post/*", PUT),
     DELETE_POST("/post/*", DELETE),
+    PAGED_POSTS("/post", GET),
     SHOW_POST("/post/*", GET);
 
     private final String path;

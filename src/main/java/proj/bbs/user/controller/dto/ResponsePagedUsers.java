@@ -8,10 +8,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PagedUserResponseDTO {
+public class ResponsePagedUsers {
     List<PagedUserDTO> pagedUserDTOList;
 
-    public PagedUserResponseDTO(List<PagedUserDTO> pagedUserDTOList) {
+    public ResponsePagedUsers(List<PagedUserDTO> pagedUserDTOList) {
         this.pagedUserDTOList = pagedUserDTOList;
     }
 }
