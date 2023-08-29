@@ -83,6 +83,17 @@ public class PostController {
         return ResponseEntity.ok(responsePagedPosts);
     }
 
+    @GetMapping("/post/user")
+    public ResponseEntity<ResponsePagedPosts> showPagedUserPosts(@RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "10") int limit,
+                                                                 Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Long userId = userPrincipal.getId();
+        List<PagedPostDTO> pagedUserPosts = postService.getPagedUserPosts(userId, offset, limit);
+        ResponsePagedPosts responsePagedPosts = new ResponsePagedPosts(pagedUserPosts);
+        return ResponseEntity.ok(responsePagedPosts);
+    }
+
+
     private boolean isPostWriter(Long postUserId, Long loginUserId) {
         if (postUserId == null || loginUserId == null) {
             return false;

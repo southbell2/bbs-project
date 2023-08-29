@@ -38,4 +38,16 @@ public class PostRepository {
                 .setParameter("id", beforeId)
                 .getResultList();
     }
+
+    public List<Post> findPagedUserPosts(long userId, int offset, int limit) {
+        return em.createQuery(
+                        "SELECT p FROM Post p " +
+                                "JOIN FETCH p.user u " +
+                                "WHERE u.id = :id " +
+                                "ORDER BY p.id DESC", Post.class)
+                .setParameter("id", userId)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

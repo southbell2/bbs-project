@@ -59,4 +59,11 @@ public class PostService {
                 .toList();
     }
 
+    public List<PagedPostDTO> getPagedUserPosts(Long userId, int offset, int limit) {
+        List<Post> pagedUserPosts = postRepository.findPagedUserPosts(userId, offset, limit);
+        return pagedUserPosts.stream()
+                .map(postMapper::postToPagedPostDto)
+                .toList();
+    }
+
 }

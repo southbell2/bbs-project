@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(UPDATE_POST.getMethod(), UPDATE_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(DELETE_POST.getMethod(), DELETE_POST.getPath()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(MY_POSTS.getMethod(), MY_POSTS.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(GET, SHOW_POST.getPath(), PAGED_POSTS.getPath()).permitAll())
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)
