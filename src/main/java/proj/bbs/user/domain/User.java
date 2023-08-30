@@ -47,9 +47,6 @@ public class User {
     @BatchSize(size = 5)
     private List<UserRole> userRoles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Post> myPosts = new ArrayList<>();
-
     public static User createUser(SignUpUserDTO userDTO, PasswordEncoder passwordEncoder, UserRole... userRoles) {
         User user = new User();
         user.setEmail(userDTO.getEmail());

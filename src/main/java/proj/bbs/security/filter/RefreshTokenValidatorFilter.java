@@ -34,13 +34,10 @@ public class RefreshTokenValidatorFilter extends OncePerRequestFilter {
         String refreshToken = getRefTokenFromCookie(request);
         TokenStatus tokenStatus = refreshTokenManager.validateRefreshToken(refreshToken);
 
-        if (tokenStatus != TokenStatus.OK) {
-            log.info("TokenStatus = {}", tokenStatus);
-            throw new BadCredentialsException("다시 로그인을 해주세요.");
+        if (tokenStatus == TokenStatus.OK) {
+            Authentication authentication = refreshTokenManager.getAuthentication(refreshToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
-        Authentication authentication = refreshTokenManager.getAuthentication(refreshToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }

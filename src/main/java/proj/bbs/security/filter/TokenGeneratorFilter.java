@@ -8,8 +8,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.Arrays;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -29,25 +31,23 @@ public class TokenGeneratorFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            throw new BadCredentialsException("회원 정보가 존재하지 않습니다.");
-        }
+        if (authentication != null && authentication.isAuthenticated()) {
+            String accessToken = accessTokenManager.createAccessToken(authentication);
+            response.setHeader(SecurityConstants.ACCESS_HEADER,
+                    SecurityConstants.BEARER_TYPE + " " + accessToken);
 
-        String accessToken = accessTokenManager.createAccessToken(authentication);
-        response.setHeader(SecurityConstants.ACCESS_HEADER,
-            SecurityConstants.BEARER_TYPE + " " + accessToken);
-
-        String oldRefToken = getRefTokenFromCookie(request);
-        String newRefToken;
-        if (oldRefToken == null) {
-            newRefToken = refreshTokenManager.createRefreshToken(authentication);
-        } else {
-            newRefToken = refreshTokenManager.reIssueRefreshToken(oldRefToken, authentication);
+            String oldRefToken = getRefTokenFromCookie(request);
+            String newRefToken;
+            if (oldRefToken == null) {
+                newRefToken = refreshTokenManager.createRefreshToken(authentication);
+            } else {
+                newRefToken = refreshTokenManager.reIssueRefreshToken(oldRefToken, authentication);
+            }
+            refreshTokenManager.addRefTokenToCookie(response, newRefToken);
         }
-        refreshTokenManager.addRefTokenToCookie(response, newRefToken);
 
         filterChain.doFilter(request, response);
     }
@@ -57,10 +57,10 @@ public class TokenGeneratorFilter extends OncePerRequestFilter {
         String refToken = null;
         if (cookies != null) {
             refToken = Arrays.stream(cookies)
-                .filter(cookie -> REFRESH_HEADER.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
+                    .filter(cookie -> REFRESH_HEADER.equals(cookie.getName()))
+                    .map(Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
         }
         return refToken;
     }
