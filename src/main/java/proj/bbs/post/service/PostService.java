@@ -3,7 +3,7 @@ package proj.bbs.post.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import proj.bbs.post.IdGenerator;
+import proj.bbs.IdGenerator;
 import proj.bbs.post.PostMapper;
 import proj.bbs.post.domain.Post;
 import proj.bbs.post.repository.PostRepository;

@@ -46,11 +46,11 @@ public class SecurityConfig {
                         .requestMatchers(ADD_USER_ROLE.getPath(), DELETE_USER_ROLE.getPath(), USERINFO_ADMIN.getPath(),
                                 DELETE_USER_ADMIN.getPath(), USERINFO_LIST.getPath()).hasRole("ADMIN")
                         .requestMatchers(SIGNUP_ADMIN.getPath()).access(ipAuthorizationManager)
-                        .requestMatchers(NEW_POST.getPath()).hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(NEW_POST.getPath(), "/comment").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(UPDATE_POST.getMethod(), UPDATE_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(DELETE_POST.getMethod(), DELETE_POST.getPath()).hasAnyRole("ADMIN", "USER")
                         .requestMatchers(MY_POSTS.getMethod(), MY_POSTS.getPath()).hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(GET, SHOW_POST.getPath(), PAGED_POSTS.getPath()).permitAll())
+                        .requestMatchers(GET, SHOW_POST.getPath(), PAGED_POSTS.getPath(), "/comment/*").permitAll())
                 .addFilterBefore(accessTokenValidatorFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(refreshTokenValidatorFilter, AccessTokenValidatorFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), RefreshTokenValidatorFilter.class)

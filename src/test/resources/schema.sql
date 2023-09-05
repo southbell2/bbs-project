@@ -22,3 +22,14 @@ CREATE TABLE IF NOT EXISTS posts (
   user_id BIGINT NOT NULL,
   nickname VARCHAR(10) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS comments (
+    comment_id BIGINT PRIMARY KEY,
+    nickname VARCHAR(10) NOT NULL,
+    content VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    INDEX post_id_idx(post_id),
+    FOREIGN KEY(post_id) REFERENCES posts(post_id) ON DELETE CASCADE
+);

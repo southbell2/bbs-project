@@ -1,4 +1,4 @@
-package proj.bbs.post;
+package proj.bbs;
 
 import java.util.concurrent.ThreadLocalRandom;
 
